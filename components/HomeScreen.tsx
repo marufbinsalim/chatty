@@ -3,7 +3,7 @@ import { SignInButton } from "@clerk/nextjs";
 export default function HomeScreen() {
   return (
     <div
-      className="flex flex-col items-center justify-center min-h-screen py-2 bg-cover bg-center"
+      className="flex flex-col items-center justify-center h-dvh py-2 bg-cover bg-center"
       style={{
         backgroundImage: "url('/world.jpg')",
       }}
