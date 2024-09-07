@@ -11,7 +11,10 @@ export default async function handler(
     return new NextResponse("Unauthorized", { status: 401 });
   }
   // Add logic that retrieves the data for the API route
+
+  // @ts-ignore
   let offset = req.query.offset ? parseInt(req.query.offset) : 0;
+  // @ts-ignore
   let limit = req.query.limit ? parseInt(req.query.limit) : 10;
   let users = await clerkClient().users.getUserList({
     offset: offset,

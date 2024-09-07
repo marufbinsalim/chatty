@@ -15,12 +15,51 @@ import {
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+function ProfileInfoCard({
+  imageURL,
+  firstName,
+  lastName,
+  email,
+  bio,
+}: {
+  imageURL: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  email: string | null;
+  bio: string | null;
+}) {
+  return (
+    <div className="flex flex-col items-center bg-red-300 flex-1 p-4">
+      {imageURL && (
+        <img
+          src={imageURL}
+          alt="profile"
+          className="rounded-full h-20 mx-auto"
+        />
+      )}
+      {firstName && lastName && (
+        <p className="w-full text-center">
+          {firstName} {lastName}
+        </p>
+      )}
+      {email && <p className="w-full text-center">{email}</p>}
+      {bio && <p className="w-full text-center">{bio}</p>}
+      <SignOutButton>
+        <button className="bg-red-500 text-white p-2 rounded-md mt-auto">
+          Sign Out
+        </button>
+      </SignOutButton>
+    </div>
+  );
+}
+
 export default function Profile() {
   const { user, isLoaded } = useUser();
 
   const [firstName, setFirstName] = useState<string | null>(null);
   const [lastName, setLastName] = useState<string | null>(null);
   const [bio, setBio] = useState<string | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [editing, setEditing] = useState<boolean>(false);
 
   useEffect(() => {
@@ -31,6 +70,7 @@ export default function Profile() {
     setLastName(user.lastName);
     // @ts-ignore
     setBio(user.unsafeMetadata["bio"]);
+    setImageUrl(user.imageUrl);
   }, [user]);
 
   if (!isLoaded || !user) {
@@ -38,7 +78,7 @@ export default function Profile() {
   }
 
   return (
-    <div className="h-dvh overflow-auto">
+    <div className="h-dvh overflow-auto flex flex-col">
       <div className="flex justify-between items-center p-4">
         <Link href="/">
           <ChevronLeft size={32} />
@@ -64,25 +104,13 @@ export default function Profile() {
         <p className="bg-red-300 p-4"> You are editing your profile </p>
       )}
       {!editing && (
-        <div>
-          <img
-            src={user.imageUrl}
-            alt="profile"
-            className="rounded-full h-20 mx-auto"
-          />
-          <p className="w-full text-center">
-            {user.firstName} {user.lastName}
-          </p>
-          <p className="w-full text-center">
-            {user.emailAddresses[0].emailAddress}
-          </p>
-          {/* @ts-ignore */}
-          <p className="w-full text-center">{bio}</p>
-
-          <SignOutButton>
-            <p className="w-full text-center">Sign Out</p>
-          </SignOutButton>
-        </div>
+        <ProfileInfoCard
+          imageURL={imageUrl}
+          firstName={firstName}
+          lastName={lastName}
+          email={user.emailAddresses[0].emailAddress}
+          bio={bio}
+        />
       )}
     </div>
   );
