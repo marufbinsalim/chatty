@@ -3,6 +3,7 @@ import {
   ArrowLeft,
   ArrowLeftIcon,
   ChevronLeft,
+  CircleDashed,
   ClipboardEdit,
   Edit,
   Edit2Icon,
@@ -103,15 +104,14 @@ function EditInformationCard({
   email: string | null;
 }) {
   const [image, setImage] = useState<File | null>(null);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   useEffect(() => {
     async function updateImage() {
-      user
-        ?.setProfileImage({ file: image })
-        .then(() => {
-          user.reload();
-        })
-        .catch((e: any) => console.log(e));
+      setIsUpdating(true);
+      await user?.setProfileImage({ file: image });
+      user.reload();
+      setIsUpdating(false);
     }
     if (image) {
       updateImage();
@@ -119,12 +119,14 @@ function EditInformationCard({
   }, [image]);
 
   async function saveChanges() {
+    setIsUpdating(true);
     await user?.update({
       firstName,
       lastName,
       unsafeMetadata: { bio },
     });
     user.reload();
+    setIsUpdating(false);
     setEditing(false);
   }
 
@@ -189,10 +191,14 @@ function EditInformationCard({
           className="w-full md:w-[400px] h-32 p-2 my-2 bg-gray-100 border-[1px] border-gray-300 rounded-lg"
         ></textarea>
         <button
-          className="bg-green-500 text-white p-2 rounded-md m-auto mt-4"
+          className="bg-green-500 text-white p-2 rounded-md m-auto mt-4 disabled:bg-gray-300"
           onClick={saveChanges}
+          disabled={isUpdating}
         >
           Save
+          {isUpdating && (
+            <CircleDashed className="w-6 h-6 inline ml-2 animate-spin" />
+          )}
         </button>
       </div>
     </div>
