@@ -1,5 +1,5 @@
 import useDiscover from "@/hooks/useDiscover";
-import { supabase } from "@/pages/utils/supabase/uiClient";
+import { supabase } from "@/utils/supabase/uiClient";
 import {
   ChevronLeft,
   ChevronLeftIcon,

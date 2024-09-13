@@ -1,4 +1,4 @@
-import { supabase } from "@/pages/utils/supabase/uiClient";
+import { supabase } from "@/utils/supabase/uiClient";
 import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 

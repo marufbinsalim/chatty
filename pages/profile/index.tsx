@@ -1,3 +1,4 @@
+import { supabase } from "@/utils/supabase/uiClient";
 import { SignOutButton, useUser } from "@clerk/nextjs";
 import {
   ArrowLeft,
@@ -16,7 +17,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { supabase } from "../utils/supabase/uiClient";
 
 function ProfileInfoCard({
   imageURL,

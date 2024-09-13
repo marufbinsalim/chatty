@@ -1,7 +1,7 @@
 import { clerkClient, currentUser, getAuth } from "@clerk/nextjs/server";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { NextResponse } from "next/server";
-import createClient from "../utils/supabase/apiClient";
+import createClient from "@/utils/supabase/apiClient";
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
