@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { supabase } from "../utils/supabase/uiClient";
 
 function ProfileInfoCard({
   imageURL,
@@ -118,12 +119,31 @@ function EditInformationCard({
     }
   }, [image]);
 
+  useEffect(() => {
+    async function updateImageInDatabase() {
+      console.log("updating image in database", user.imageUrl);
+      const { error } = await supabase.from("users").upsert({
+        id: user.id,
+        imageUrl: user.imageUrl,
+      });
+    }
+    if (imageUrl !== user.imageUrl) {
+      updateImageInDatabase();
+    }
+  }, [user]);
+
   async function saveChanges() {
     setIsUpdating(true);
     await user?.update({
       firstName,
       lastName,
       unsafeMetadata: { bio },
+    });
+    const { error } = await supabase.from("users").upsert({
+      id: user.id,
+      firstName: firstName,
+      lastName: lastName,
+      bio: bio,
     });
     user.reload();
     setIsUpdating(false);
