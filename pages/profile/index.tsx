@@ -40,11 +40,9 @@ function ProfileInfoCard({
           className="rounded-full h-20 w-20 mb-4 border-4 border-gray-200"
         />
       )}
-      {firstName && lastName && (
-        <p className="text-center text-2xl font-bold text-gray-800 mb-2">
-          {firstName} {lastName}
-        </p>
-      )}
+      <p className="text-center text-2xl font-bold text-gray-800 mb-2">
+        {firstName} {lastName}
+      </p>
       {email && <p className="text-center text-gray-600 mb-4">{email}</p>}
       {bio && (
         <div className="w-full mt-8 max-w-lg">
@@ -141,8 +139,8 @@ function EditInformationCard({
     });
     const { error } = await supabase.from("users").upsert({
       id: user.id,
-      firstName: firstName,
-      lastName: lastName,
+      firstName: firstName || "",
+      lastName: lastName || "",
       bio: bio,
     });
     user.reload();

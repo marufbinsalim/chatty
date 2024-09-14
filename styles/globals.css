@@ -7,3 +7,37 @@
         text-wrap: balance;
     }
 }
+
+.hidden-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.hidden-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+/* For Firefox */
+.styled-scrollbar {
+    scrollbar-width: thin; /* Use 'auto' for default width, 'thin' for a slimmer scrollbar */
+    scrollbar-color: #b0b0b0 #f0f0f0; /* Handle color and track color */
+}
+
+/* For WebKit browsers (Chrome, Safari) */
+.styled-scrollbar::-webkit-scrollbar {
+    width: 12px; /* Width of the scrollbar */
+    height: 12px; /* Height of the horizontal scrollbar */
+}
+
+.styled-scrollbar::-webkit-scrollbar-track {
+    background: #f0f0f0; /* Track (part the scrollbar slides on) color */
+}
+
+.styled-scrollbar::-webkit-scrollbar-thumb {
+    background: #b0b0b0; /* Scrollbar handle color */
+    border-radius: 6px; /* Round the corners of the scrollbar handle */
+}
+
+.styled-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #a0a0a0; /* Darker color when hovering over the scrollbar handle */
+}

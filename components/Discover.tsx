@@ -6,6 +6,14 @@ import {
   ChevronRight,
   ChevronsRight,
   CircleDashed,
+  Inbox,
+  InboxIcon,
+  LucideInbox,
+  MessageCircle,
+  MessageCirclePlus,
+  MessageSquare,
+  MessageSquareText,
+  TextIcon,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -18,7 +26,7 @@ export default function Discover() {
     });
 
   return (
-    <div className="flex-1 p-4 md:w-[80vw] m-auto">
+    <div className="flex-1 px-4 w-full md:w-[80vw] mx-auto flex flex-col overflow-auto">
       <h1 className="text-2xl font-bold mb-4">Discover</h1>
       <div className="mb-4">
         <input
@@ -55,23 +63,35 @@ export default function Discover() {
           <CircleDashed />{" "}
         </div>
       )}
-      <div className="flex flex-col mt-3">
+      <div className="flex-1 flex flex-col mt-3 overflow-y-scroll md:px-4 styled-scrollbar">
         {
           // fill with 20 users using the users array
-          users.map((user) => (
+          [...users, ...users].map((user, index) => (
             <div
-              key={user.id}
-              className="flex items-center gap-4 mb-4 p-4 border border-gray-200 rounded-lg shadow-sm"
+              key={index}
+              className="flex md:flex-row flex-col md:items-center gap-4 mb-4 p-4 border border-gray-200 rounded-lg shadow-sm"
             >
-              <img
-                src={user.imageUrl}
-                alt={user.firstName}
-                className="w-12 h-12 rounded-full object-cover"
-              />
-              <div>
-                <h2 className="text-lg font-semibold">{`${user.firstName} ${user.lastName}`}</h2>
-                <p className="text-gray-600">{user.email}</p>
+              <div className="flex items-center gap-4">
+                <img
+                  src={user.imageUrl}
+                  alt={user.firstName}
+                  className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover border border-gray-200"
+                />
+                <MessageSquareText
+                  strokeWidth={1}
+                  size={32}
+                  className="md:hidden block"
+                />
               </div>
+              <div className="flex flex-col text-left w-full">
+                <h2 className="text-lg font-semibold break-words">{`${user.firstName} ${user.lastName}`}</h2>
+                <p className="text-gray-600 break-all">{user.email}</p>
+              </div>
+              <MessageSquareText
+                strokeWidth={1}
+                size={32}
+                className="hidden md:block"
+              />
             </div>
           ))
         }

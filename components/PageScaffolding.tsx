@@ -14,7 +14,7 @@ export default function PageScaffold({
     <div className="h-dvh max-h-dvh flex flex-col">
       {/* header */}
       <Header />
-      <div className="flex flex-col flex-1">{children}</div>
+      <div className="flex-1 flex flex-col overflow-hidden">{children}</div>
       <Navbar route={route} />
     </div>
   );
