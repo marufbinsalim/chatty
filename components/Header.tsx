@@ -7,10 +7,12 @@ export default function Header() {
 
   return (
     <div className="flex justify-between items-center p-2 bg-gray-50 gap-4 w-full m-auto">
-      <div className="flex items-center gap-2">
-        <MessageCircle size={32} strokeWidth={1} />
-        <p className="text-lg md:text-xl md:font-thin">ChattyPals</p>
-      </div>
+      <Link href="/">
+        <div className="flex items-center gap-2">
+          <MessageCircle size={32} strokeWidth={1} />
+          <p className="text-lg md:text-xl md:font-thin">ChattyPals</p>
+        </div>
+      </Link>
 
       {isLoggedInUserLoaded && user && (
         <div className="flex items-center gap-2">

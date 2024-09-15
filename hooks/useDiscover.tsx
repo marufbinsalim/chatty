@@ -40,6 +40,7 @@ export default function useDiscover({ query }: { query: string }) {
   }, [user, currentPage, debouncedQuery]);
 
   useEffect(() => {
+    setLoading(true);
     const timeout = setTimeout(() => {
       setCurrentPage(1);
       setDebouncedQuery(query);
