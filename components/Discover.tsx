@@ -14,6 +14,7 @@ import {
   MessageSquare,
   MessageSquareText,
   TextIcon,
+  XCircleIcon,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -47,7 +48,7 @@ export default function Discover() {
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
-          <p className="text-sm font-medium">{`${currentPage}/${totalPage}`}</p>
+          <p className="text-sm font-light">{`${currentPage}/${totalPage}`}</p>
           <button
             onClick={nextPage}
             disabled={currentPage === totalPage}
@@ -66,7 +67,7 @@ export default function Discover() {
       <div className="flex-1 flex flex-col mt-3 overflow-y-scroll md:px-4 styled-scrollbar">
         {
           // fill with 20 users using the users array
-          [...users, ...users].map((user, index) => (
+          users.map((user, index) => (
             <div
               key={index}
               className="flex md:flex-row flex-col md:items-center gap-4 mb-4 p-4 border border-gray-200 rounded-lg shadow-sm"
@@ -75,7 +76,7 @@ export default function Discover() {
                 <img
                   src={user.imageUrl}
                   alt={user.firstName}
-                  className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover border border-gray-200"
+                  className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover"
                 />
                 <MessageSquareText
                   strokeWidth={1}
@@ -85,7 +86,9 @@ export default function Discover() {
               </div>
               <div className="flex flex-col text-left w-full">
                 <h2 className="text-lg font-semibold break-words">{`${user.firstName} ${user.lastName}`}</h2>
-                <p className="text-gray-600 break-all">{user.email}</p>
+                <p className="text-gray-600 break-all font-light">
+                  {user.email}
+                </p>
               </div>
               <MessageSquareText
                 strokeWidth={1}
@@ -95,20 +98,16 @@ export default function Discover() {
             </div>
           ))
         }
+        {!users || users.length === 0 ? (
+          <div className="flex flex-col items-center justify-center gap-4 shadow-sm p-4 border border-gray-200 rounded-lg mt-8">
+            <p className="text-2xl">No users found</p>
+            <p className="text-gray-500 text-center">
+              No users found. Try searching for another user.
+            </p>
+            <XCircleIcon strokeWidth={0.8} size={64} />
+          </div>
+        ) : null}
       </div>
     </div>
   );
 }
-
-// 1 /
-//   (2)[
-//     {
-//       id: "user_2m1ihNpaXUNxpLkDMGrnIrK1apF",
-//       email: "mdmarufbinsalim@gmail.com",
-//       firstName: "Md Maruf Bin Salim",
-//       lastName: "Bhuiyan",
-//       bio: null,
-//       imageUrl:
-//         "https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZ29vZ2xlL2ltZ18ybTFpaFEzaXNkeU92MFpISXVhaUE3ZDVhNzYifQ",
-//     }
-//   ];

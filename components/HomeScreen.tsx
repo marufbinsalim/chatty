@@ -1,4 +1,5 @@
 import { SignInButton } from "@clerk/nextjs";
+import { MessageCircle } from "lucide-react";
 
 export default function HomeScreen() {
   return (
@@ -8,13 +9,18 @@ export default function HomeScreen() {
         backgroundImage: "url('/world.jpg')",
       }}
     >
-      <h1 className="text-3xl md:text-5xl text-white font-bold">ChattyPals</h1>
-      <p className="text-white text-center mt-4 max-w-md md:text-2xl">
+      <div className="flex items-center justify-center gap-4">
+        <h1 className="text-3xl md:text-5xl text-white font-thin">
+          ChattyPals
+        </h1>
+        <MessageCircle color="white" size={48} strokeWidth={1} />
+      </div>
+      <p className="text-white font-extralight text-center mt-4 max-w-md md:text-2xl">
         A place to connect with people from all around the world.
         <br />
       </p>
       <SignInButton>
-        <button className="p-2 px-4 rounded-3xl bg-white mt-6">
+        <button className="p-2 px-4 rounded-3xl bg-white mt-6 font-thin">
           Get Started
         </button>
       </SignInButton>

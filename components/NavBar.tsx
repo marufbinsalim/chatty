@@ -12,8 +12,8 @@ export default function Navbar({ route }: NavbarProps) {
         <button
           className={`p-2 flex gap-2 items-center ${route === "/home" ? "" : ""}`}
         >
-          <p className="hidden md:block">Discover</p>
-          <EarthIcon size={24} />
+          <p className="hidden md:block font-thin">Discover</p>
+          <EarthIcon strokeWidth={1} size={24} />
         </button>
       </Link>
 
@@ -21,8 +21,8 @@ export default function Navbar({ route }: NavbarProps) {
         <button
           className={`p-2 flex gap-2 items-center ${route === "/messages" ? "" : ""}`}
         >
-          <p className="hidden md:block">Messages</p>
-          <MessageCircleIcon size={24} />
+          <p className="hidden md:block font-thin">Messages</p>
+          <MessageCircleIcon strokeWidth={1} size={24} />
         </button>
       </Link>
     </div>
