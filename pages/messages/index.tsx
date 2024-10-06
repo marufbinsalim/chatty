@@ -54,19 +54,3 @@ export default function Messages() {
     </PageScaffold>
   );
 }
-
-// created_at: "2024-09-15T13:32:50.056638+00:00";
-// id: "a224e7f1-d872-4249-b5c4-cbda5fe4ec6b";
-// last_message_content: "**start_of_conversation**";
-// last_message_created_at: "2024-09-15T13:32:50.448051+00:00";
-// recipient_email: "moyiimrin696@gmail.com";
-// recipient_firstname: "Mrin";
-// recipient_id: "user_2m1jWzTQ7rOMh9fBDThuzZyWgF5";
-// recipient_imageurl: "https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZ29vZ2xlL2ltZ18ybTFqV3R0VUhKb3VRTlF6cko3YzBRM25KTzQifQ";
-// recipient_lastname: "Moyii";
-// sender_email: "mdmarufbinsalim@gmail.com";
-// sender_firstname: "maruf";
-// sender_id: "user_2m1ihNpaXUNxpLkDMGrnIrK1apF";
-// sender_imageurl: "https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZ29vZ2xlL2ltZ18ybTFpaFEzaXNkeU92MFpISXVhaUE3ZDVhNzYifQ";
-// sender_lastname: "Bhuiyan";
-// type: "direct";
