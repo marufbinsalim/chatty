@@ -160,7 +160,7 @@ export default function Discover() {
                   onClick={() => createOrGoToThread(user.id)}
                   strokeWidth={1}
                   size={32}
-                  className="md:hidden block"
+                  className="md:hidden block cursor-pointer"
                 />
               </div>
               <div className="flex flex-col text-left w-full">
@@ -173,7 +173,7 @@ export default function Discover() {
                 onClick={() => createOrGoToThread(user.id)}
                 strokeWidth={1}
                 size={32}
-                className="hidden md:block"
+                className="hidden md:block cursor-pointer"
               />
             </div>
           ))}

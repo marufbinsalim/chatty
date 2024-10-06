@@ -1,4 +1,5 @@
 import PageScaffold from "@/components/PageScaffolding";
+import useRealtimeThreads from "@/hooks/useRealtimeThreads";
 import { supabase } from "@/utils/supabase/uiClient";
 import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
@@ -6,24 +7,7 @@ import { useEffect, useState } from "react";
 
 export default function Messages() {
   const { user } = useUser();
-  const [threads, setThreads] = useState<any[]>([]);
-
-  useEffect(() => {
-    async function fetchThreads(id: string) {
-      const { data, error } = await supabase
-        .from("user_threads_view")
-        .select("*")
-        .or(`sender_id.eq.${id},recipient_id.eq.${id}`);
-      if (data) {
-        setThreads(data);
-        console.log(data);
-      } else {
-        console.error(error);
-      }
-    }
-
-    if (user) fetchThreads(user.id);
-  }, [user]);
+  const { threads } = useRealtimeThreads(user?.id);
 
   function getUserInfo(thread: any) {
     if (user?.id === thread.sender_id) {
@@ -43,12 +27,12 @@ export default function Messages() {
 
   return (
     <PageScaffold route="/messages">
-      <h1>Messages</h1>
-      <div className="flex flex-col space-y-4 p-4 bg-gray-100 rounded-lg shadow-md">
+      <div className="flex flex-col space-y-4 p-4 bg-gray-100 rounded-lg shadow-md flex-1">
+        <h1>Messages</h1>
         {threads.map((thread) => {
           const { id, name, image } = getUserInfo(thread);
           return (
-            <Link href={`/messages/${id}`} key={thread.id}>
+            <Link href={`/messages/${thread.id}`} key={thread.id}>
               <div
                 key={thread.id}
                 className="flex items-center space-x-4 p-4 bg-white rounded-lg shadow-md border border-gray-200"
