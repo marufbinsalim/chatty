@@ -28,7 +28,8 @@ export default function useRealtimeThreads(userId: any) {
       const { data, error } = await supabase
         .from("user_threads_view")
         .select("*")
-        .or(`sender_id.eq.${id},recipient_id.eq.${id}`);
+        .or(`sender_id.eq.${id},recipient_id.eq.${id}`)
+        .order("last_message_created_at", { ascending: false });
       if (data) {
         setThreads(
           data.filter(

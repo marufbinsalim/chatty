@@ -1,5 +1,7 @@
 import useMessenger from "@/hooks/useMessenger";
+import { supabase } from "@/utils/supabase/uiClient";
 import { useUser } from "@clerk/nextjs";
+import { ArrowRight, CircleDashed } from "lucide-react";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 
@@ -27,6 +29,8 @@ export default function Thread() {
   const [lastFetchedBatchesLastId, setLastFetchedBatchesLastId] = useState<
     number | null
   >(null);
+  const [inputText, setInputText] = useState<string>("");
+  const [sendingText, setSendingText] = useState<Boolean>(false);
 
   // fetch messages from the server should be done here that will take some time to load
   // use timeout to simulate the loading time
@@ -78,6 +82,31 @@ export default function Thread() {
     }
   };
 
+  async function sendMessage() {
+    if (!user) return;
+    if (!inputText || inputText.trim() === "" || sendingText) return;
+    setSendingText(true);
+
+    // add a new message to the thread - "conversation started"
+    const { data: newMessageData, error: newMessageError } = await supabase
+      .from("messages")
+      .insert([
+        {
+          thread_id: threadId,
+          user_id: user?.id,
+          recipient_id: participant.user_id,
+          content: inputText,
+        },
+      ])
+      .select()
+      .single();
+
+    console.log("newMessageData", newMessageData, newMessageError);
+
+    setInputText("");
+    setSendingText(false);
+  }
+
   useEffect(() => {
     const options = {
       root: null, // use the viewport as the root
@@ -125,11 +154,21 @@ export default function Thread() {
       </div>
       <div className="flex items-center space-x-4 p-4">
         <input
+          value={inputText}
+          onChange={(e) => setInputText(e.target.value)}
           type="text"
           className="w-full border border-gray-300 rounded p-2 "
         />
-        <button className="bg-blue-500 text-white px-4 py-2 rounded">
-          Send
+        <button
+          className="bg-blue-500 text-white px-4 py-2 rounded"
+          disabled={sendingText ? true : false}
+          onClick={sendMessage}
+        >
+          {sendingText ? (
+            <CircleDashed size={24} className="animate-spin" />
+          ) : (
+            <ArrowRight size={24} />
+          )}
         </button>
       </div>
     </div>
