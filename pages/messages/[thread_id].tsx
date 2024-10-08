@@ -5,12 +5,6 @@ import { ArrowRight, CircleDashed } from "lucide-react";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 
-// Mock data for messages
-const mockMessages = Array.from({ length: 500 }, (_, i) => ({
-  id: i + 1,
-  content: `Message ${i + 1}`,
-}));
-
 const FETCH_LIMIT = 15;
 
 type Message = {
@@ -41,7 +35,6 @@ export default function Thread() {
   const [inputText, setInputText] = useState<string>("");
   const [sendingText, setSendingText] = useState<Boolean>(false);
 
-  // use timeout to simulate the loading time
   const fetchMessages = async (pageNum: number) => {
     canLoadMore.current = false;
     setLoading(true);
@@ -84,9 +77,7 @@ export default function Thread() {
   useEffect(() => {
     if (!lastFetchedBatchesLastId) return;
     if (scrollRef.current) {
-      // scroll to the bottom of the messages
       scrollRef.current.scrollIntoView({ behavior: "instant" });
-      // wait for the scroll to finish
       canLoadMore.current = true;
     }
   }, [lastFetchedBatchesLastId]);
@@ -123,7 +114,7 @@ export default function Thread() {
   const handleScroll = (entries: IntersectionObserverEntry[]) => {
     const target = entries[0];
     if (target.isIntersecting && !loading) {
-      setPage((prev) => prev + 1); // Decrement to fetch previous messages
+      setPage((prev) => prev + 1);
     }
   };
 
@@ -133,7 +124,6 @@ export default function Thread() {
     if (!inputText || inputText.trim() === "" || sendingText) return;
     setSendingText(true);
 
-    // add a new message to the thread - "conversation started"
     const { data: newMessageData, error: newMessageError } = await supabase
       .from("messages")
       .insert([
@@ -179,7 +169,6 @@ export default function Thread() {
 
   function formatMessageDate(date: string): string {
     {
-      /* sent at 2024-10-08T17:35:01.811539+00:00 format it*/
     }
 
     let dateObj = new Date(date);
@@ -190,7 +179,7 @@ export default function Thread() {
 
   useEffect(() => {
     const options = {
-      root: null, // use the viewport as the root
+      root: null,
       rootMargin: "0px",
       threshold: 1.0,
     };
@@ -274,30 +263,3 @@ export default function Thread() {
     </div>
   );
 }
-
-// -- how many messages in the thread - count
-// -- last-message (end) - count
-// -- batch_size - 15
-// -- start (end - batch size)
-
-// total - 100
-// batch size - 10
-// 1st page (start, end)
-// 	90, 99
-// 2nd page (start, end)
-//   80, 89
-
-// how to calculate the start and end for the next page
-// 1st page - 90, 99
-// 2nd page - 80, 89
-// in code
-//
-// let count = data.count;
-// let batch_size = 10;
-// let start = count - batch_size;
-// let end = count;
-//
-// let new_start = start - batch_size;
-// let new_end = start;
-//
-//
