@@ -3,7 +3,12 @@ import { useEffect, useState } from "react";
 
 export default function useMessenger(threadId: any, userId: any) {
   const [participants, setParticipants] = useState<any[] | null>([]);
-  const [participant, setParticipant] = useState<any | null>(null); // [participant, setParticipant
+  const [participant, setParticipant] = useState<{
+    user_id: string | null;
+    firstName: string | null;
+    lastName: string | null;
+    imageUrl: string | null;
+  } | null>(null); // [participant, setParticipant
   const [messages, setMessages] = useState<any[]>([]);
   const [isPartOfThread, setIsPartOfThread] = useState<boolean>(false);
 

@@ -41,19 +41,29 @@ export default function Thread() {
   const [inputText, setInputText] = useState<string>("");
   const [sendingText, setSendingText] = useState<Boolean>(false);
 
-  // fetch messages from the server should be done here that will take some time to load
   // use timeout to simulate the loading time
   const fetchMessages = async (pageNum: number) => {
-    setLoading(true);
     canLoadMore.current = false;
-    const start = (pageNum - 1) * FETCH_LIMIT;
-    const end = start + FETCH_LIMIT;
+    setLoading(true);
+    const { count: totalMessages, error: countError } = await supabase
+      .from("messages")
+      .select("*", { count: "exact", head: true })
+      .eq("thread_id", threadId);
+
+    let totalMessagesCount = totalMessages as number;
+    let start = totalMessagesCount - pageNum * FETCH_LIMIT;
+    let end = start + FETCH_LIMIT - 1;
+
+    const MAX_PAGE = Math.ceil(totalMessagesCount / FETCH_LIMIT);
+    if (pageNum > MAX_PAGE) {
+      setLoading(false);
+      return;
+    }
 
     const { data, error } = await supabase
       .from("messages")
       .select("*")
       .eq("thread_id", threadId)
-      .range(start, end)
       .order("sent_at", { ascending: true })
       .range(start, end);
 
@@ -73,7 +83,6 @@ export default function Thread() {
 
   useEffect(() => {
     if (!lastFetchedBatchesLastId) return;
-    console.log("lastFetchedBatchesLastId changed", lastFetchedBatchesLastId);
     if (scrollRef.current) {
       // scroll to the bottom of the messages
       scrollRef.current.scrollIntoView({ behavior: "instant" });
@@ -91,7 +100,6 @@ export default function Thread() {
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "messages" },
         (payload) => {
-          console.log("Message added!", payload);
           const newMessage = payload.new as Message;
           if (newMessage.thread_id !== threadId) return;
           setMessages((prevMessages) => {
@@ -123,6 +131,7 @@ export default function Thread() {
 
   async function sendMessage() {
     if (!user) return;
+    if (!participant) return;
     if (!inputText || inputText.trim() === "" || sendingText) return;
     setSendingText(true);
 
@@ -140,10 +149,28 @@ export default function Thread() {
       .select()
       .single();
 
-    console.log("newMessageData", newMessageData, newMessageError);
-
     setInputText("");
     setSendingText(false);
+  }
+
+  function getMessageSender(message: Message): {
+    user_id: string | null;
+    firstName: string | null;
+    lastName: string | null;
+    imageUrl: string | null;
+  } | null {
+    if (message.user_id === user?.id) {
+      return user
+        ? {
+            user_id: user.id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            imageUrl: user.imageUrl,
+          }
+        : null;
+    } else {
+      return participant;
+    }
   }
 
   useEffect(() => {
@@ -190,6 +217,9 @@ export default function Thread() {
             <div className="flex items-center space-x-4">
               <div className="w-8 h-8 bg-gray-300 rounded-full"></div>
               <div>
+                <p>{getMessageSender(message)?.firstName}</p>
+              </div>
+              <div>
                 <p>{message.content}</p>
                 <p>{message.sent_at}</p>
               </div>
@@ -219,3 +249,30 @@ export default function Thread() {
     </div>
   );
 }
+
+// -- how many messages in the thread - count
+// -- last-message (end) - count
+// -- batch_size - 15
+// -- start (end - batch size)
+
+// total - 100
+// batch size - 10
+// 1st page (start, end)
+// 	90, 99
+// 2nd page (start, end)
+//   80, 89
+
+// how to calculate the start and end for the next page
+// 1st page - 90, 99
+// 2nd page - 80, 89
+// in code
+//
+// let count = data.count;
+// let batch_size = 10;
+// let start = count - batch_size;
+// let end = count;
+//
+// let new_start = start - batch_size;
+// let new_end = start;
+//
+//
