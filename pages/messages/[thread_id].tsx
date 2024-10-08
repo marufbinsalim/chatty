@@ -156,19 +156,36 @@ export default function Thread() {
     firstName: string | null;
     lastName: string | null;
     imageUrl: string | null;
+    isSelfMessage: boolean;
   } | null {
-    if (message.user_id === user?.id) {
-      return user
-        ? {
-            user_id: user.id,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            imageUrl: user.imageUrl,
-          }
-        : null;
-    } else {
-      return participant;
+    if (!user || !participant) return null;
+
+    return message.user_id === user.id
+      ? {
+          user_id: user.id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          imageUrl: user.imageUrl,
+          isSelfMessage: true,
+        }
+      : {
+          user_id: participant?.user_id,
+          firstName: participant?.firstName,
+          lastName: participant?.lastName,
+          imageUrl: participant?.imageUrl,
+          isSelfMessage: false,
+        };
+  }
+
+  function formatMessageDate(date: string): string {
+    {
+      /* sent at 2024-10-08T17:35:01.811539+00:00 format it*/
     }
+
+    let dateObj = new Date(date);
+    let formattedDate = dateObj.toLocaleDateString();
+    let formattedTime = dateObj.toLocaleTimeString();
+    return `${formattedDate} ${formattedTime}`;
   }
 
   useEffect(() => {
@@ -204,22 +221,32 @@ export default function Thread() {
         {!loading && <p>Messages loaded</p>}
         {threadId}
       </div>
-      <div className="flex-1 bg-red-200 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto">
         <div id="loading" style={{ height: "20px" }} ref={loadingRef}></div>
         {messages?.map((message) => (
           <div
             ref={lastFetchedBatchesLastId === message.id ? scrollRef : null}
             key={message.id}
-            className="p-4"
+            className={`p-4 m-4 bg-gray-100 w-2/3 rounded-lg ${
+              getMessageSender(message)?.isSelfMessage ? "ml-auto" : "mr-auto"
+            }`}
           >
-            <div className="flex items-center space-x-4">
-              <div className="w-8 h-8 bg-gray-300 rounded-full"></div>
-              <div>
-                <p>{getMessageSender(message)?.firstName}</p>
+            <div className="flex flex-col space-y-4">
+              <div className="flex items-center space-x-2">
+                <img
+                  className="w-8 h-8 bg-gray-300 rounded-full"
+                  src={getMessageSender(message)?.imageUrl || ""}
+                  alt=""
+                />
+                <p>{`${getMessageSender(message)?.firstName} ${getMessageSender(message)?.lastName}`}</p>
               </div>
+
               <div>
                 <p>{message.content}</p>
-                <p>{message.sent_at}</p>
+                {/* sent at 2024-10-08T17:35:01.811539+00:00 format it*/}
+                <p className="text-xs font-light">
+                  {formatMessageDate(message.sent_at)}
+                </p>
               </div>
             </div>
           </div>
