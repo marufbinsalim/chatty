@@ -87,9 +87,7 @@ export default function Thread() {
       // scroll to the bottom of the messages
       scrollRef.current.scrollIntoView({ behavior: "instant" });
       // wait for the scroll to finish
-      setTimeout(() => {
-        canLoadMore.current = true;
-      }, 1000);
+      canLoadMore.current = true;
     }
   }, [lastFetchedBatchesLastId]);
 
