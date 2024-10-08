@@ -198,19 +198,27 @@ export default function Thread() {
   }, [loading]);
 
   if (!participant) return null;
+  if (!user) return null;
   if (!canViewMessages) {
     return <div>Not authorized</div>;
   }
 
   return (
     <div className="flex flex-col h-screen overflow-hidden">
-      <div>
-        <h1>Thread</h1>
-        {loading && <p>Loading messages...</p>}
-        {!loading && <p>Messages loaded</p>}
-        {threadId}
+      <div className="flex items-center p-4 bg-gray-200 space-x-2">
+        <img
+          src={participant.imageUrl || ""}
+          alt="profile"
+          className="w-8 h-8 rounded-full"
+        />
+        <h1>
+          {participant.firstName} {participant.lastName}
+        </h1>
       </div>
       <div className="flex-1 overflow-y-auto">
+        {loading && (
+          <CircleDashed className="m-auto mt-4 animate-spin" size={32} />
+        )}
         <div id="loading" style={{ height: "20px" }} ref={loadingRef}></div>
         {messages?.map((message) => (
           <div
