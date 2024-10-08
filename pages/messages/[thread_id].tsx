@@ -11,6 +11,17 @@ const mockMessages = Array.from({ length: 500 }, (_, i) => ({
   content: `Message ${i + 1}`,
 }));
 
+const FETCH_LIMIT = 100;
+
+type Message = {
+  id: string;
+  thread_id: string;
+  user_id: string;
+  content: string;
+  sent_at: string;
+  recipient_id: string;
+};
+
 export default function Thread() {
   const router = useRouter();
   const [threadId, setThreadId] = useState<string | null>(
@@ -18,16 +29,14 @@ export default function Thread() {
   );
   const { user } = useUser();
   const { participant, canViewMessages } = useMessenger(threadId, user?.id);
-  const [messages, setMessages] = useState<
-    { id: number; content: string }[] | null
-  >(null);
+  const [messages, setMessages] = useState<Message[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const loadingRef = useRef<HTMLDivElement | null>(null);
   const canLoadMore = useRef<boolean>(true);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const [lastFetchedBatchesLastId, setLastFetchedBatchesLastId] = useState<
-    number | null
+    string | null
   >(null);
   const [inputText, setInputText] = useState<string>("");
   const [sendingText, setSendingText] = useState<Boolean>(false);
@@ -37,23 +46,29 @@ export default function Thread() {
   const fetchMessages = async (pageNum: number) => {
     setLoading(true);
     canLoadMore.current = false;
-    let lastId: number | null = null;
-    setTimeout(() => {
-      const start = (pageNum - 1) * 100;
-      const newMessages = mockMessages.slice(start, start + 100);
-      // make sure newMessages[index] exists
+    const start = (pageNum - 1) * FETCH_LIMIT;
+    const end = start + FETCH_LIMIT;
 
-      lastId = newMessages[newMessages.length - 1]
-        ? newMessages[newMessages.length - 1].id
-        : null;
-      console.log("lastId", lastId);
-      setLastFetchedBatchesLastId(lastId);
-      setMessages((prevMessages) => {
-        if (!prevMessages) return newMessages;
-        return [...newMessages, ...prevMessages];
-      });
-      setLoading(false);
-    }, 1000);
+    const { data, error } = await supabase
+      .from("messages")
+      .select("*")
+      .eq("thread_id", threadId)
+      .range(start, end)
+      .order("sent_at", { ascending: false })
+      .range(start, end);
+
+    let newMessages = data?.filter(
+      (message) => message.content !== "**start_of_conversation**",
+    ) as Message[];
+    let lastId: string | null = newMessages[newMessages.length - 1]
+      ? newMessages[newMessages.length - 1].id
+      : null;
+    setLastFetchedBatchesLastId(lastId);
+    setMessages((prevMessages) => {
+      if (!prevMessages) return newMessages;
+      return [...newMessages, ...prevMessages];
+    });
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -146,9 +161,15 @@ export default function Thread() {
           <div
             ref={lastFetchedBatchesLastId === message.id ? scrollRef : null}
             key={message.id}
+            className="p-4"
           >
-            {message.content}
-            {lastFetchedBatchesLastId === message.id && " last fetched"}
+            <div className="flex items-center space-x-4">
+              <div className="w-8 h-8 bg-gray-300 rounded-full"></div>
+              <div>
+                <p>{message.content}</p>
+                <p>{message.sent_at}</p>
+              </div>
+            </div>
           </div>
         ))}
       </div>
