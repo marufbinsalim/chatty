@@ -11,7 +11,7 @@ const mockMessages = Array.from({ length: 500 }, (_, i) => ({
   content: `Message ${i + 1}`,
 }));
 
-const FETCH_LIMIT = 100;
+const FETCH_LIMIT = 15;
 
 type Message = {
   id: string;
@@ -54,7 +54,7 @@ export default function Thread() {
       .select("*")
       .eq("thread_id", threadId)
       .range(start, end)
-      .order("sent_at", { ascending: false })
+      .order("sent_at", { ascending: true })
       .range(start, end);
 
     let newMessages = data?.filter(
@@ -83,6 +83,30 @@ export default function Thread() {
       }, 1000);
     }
   }, [lastFetchedBatchesLastId]);
+
+  useEffect(() => {
+    const listener = supabase
+      .channel("messages_channel")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "messages" },
+        (payload) => {
+          console.log("Message added!", payload);
+          const newMessage = payload.new as Message;
+          if (newMessage.thread_id !== threadId) return;
+          setMessages((prevMessages) => {
+            if (!prevMessages) return [newMessage];
+            return [...prevMessages, newMessage];
+          });
+          setLastFetchedBatchesLastId(newMessage.id);
+        },
+      )
+      .subscribe();
+
+    return () => {
+      listener.unsubscribe();
+    };
+  }, []);
 
   useEffect(() => {
     if (canLoadMore.current) {
