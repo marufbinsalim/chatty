@@ -112,17 +112,6 @@ export default function Thread() {
         {threadId}
       </div>
       <div className="flex-1 bg-red-200 overflow-y-auto">
-        {/* <div key={participant.user_id} className="flex items-center space-x-4">
-          <img
-            src={participant.imageUrl}
-            alt={participant.firstName}
-            className="w-12 h-12 rounded-full"
-          />
-          <p>
-            {participant.firstName} {participant.lastName}
-          </p>
-          <p>{participant.email}</p>
-        </div> */}
         <div id="loading" style={{ height: "20px" }} ref={loadingRef}></div>
         {messages?.map((message) => (
           <div
