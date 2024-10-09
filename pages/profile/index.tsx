@@ -196,6 +196,12 @@ function EditInformationCard({
       });
     }
 
+    if (!firstName || firstName.trim() === "") {
+      alert("First name cannot be empty");
+      setIsUpdating(false);
+      return;
+    }
+
     await user?.update({
       firstName,
       lastName,

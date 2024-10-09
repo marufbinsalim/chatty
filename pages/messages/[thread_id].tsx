@@ -375,7 +375,7 @@ export default function Thread() {
                       src={getMessageSender(message)?.imageUrl || ""}
                       alt=""
                     />
-                    <p>{`${getMessageSender(message)?.firstName} ${getMessageSender(message)?.lastName}`}</p>
+                    <p>{`${getMessageSender(message)?.firstName} ${getMessageSender(message)?.lastName || ""}`}</p>
                   </div>
 
                   <div>
