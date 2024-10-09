@@ -36,8 +36,7 @@ export default function useRealtimeThreads(userId: any) {
             (thread: any) =>
               // if the last message is not the start of the conversation
               // then show the thread
-              // thread.last_message_content !== "**start_of_conversation**",
-              true,
+              thread.last_message_content !== "**start_of_conversation**",
           ),
         );
         console.log(data);
