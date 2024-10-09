@@ -1,9 +1,25 @@
 import useMessenger from "@/hooks/useMessenger";
 import { supabase } from "@/utils/supabase/uiClient";
 import { useUser } from "@clerk/nextjs";
-import { ArrowRight, CircleDashed } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  CircleDashed,
+  Laugh,
+  LaughIcon,
+  LucideLaugh,
+  Smile,
+  XCircle,
+  XIcon,
+} from "lucide-react";
 import { useRouter } from "next/router";
-import { LegacyRef, useEffect, useRef, useState } from "react";
+import {
+  LegacyRef,
+  MutableRefObject,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import dynamic from "next/dynamic";
 
 const Picker = dynamic(
@@ -24,6 +40,9 @@ type Message = {
   recipient_id: string;
 };
 
+// write a type that is either CHAT_WINDOW or PROFILE_WINDOW
+type WindowType = "CHAT_WINDOW" | "PROFILE_WINDOW";
+
 export default function Thread() {
   const router = useRouter();
   const [threadId, setThreadId] = useState<string | null>(
@@ -43,7 +62,10 @@ export default function Thread() {
   const [inputText, setInputText] = useState<string>("");
   const [sendingText, setSendingText] = useState<Boolean>(false);
   const [showPicker, setShowPicker] = useState(false);
-  const inputRef = useRef<LegacyRef<HTMLInputElement> | null>(null);
+  // const inputRef = useRef<<HTMLInputElement> | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [selectedWindow, setSelectedWindow] =
+    useState<WindowType>("CHAT_WINDOW");
 
   const onEmojiClick = (event: any) => {
     console.log(JSON.stringify(event));
@@ -229,88 +251,143 @@ export default function Thread() {
   }
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden">
-      <div className="flex items-center p-4 bg-gray-200 space-x-2">
-        <img
-          src={participant.imageUrl || ""}
-          alt="profile"
-          className="w-8 h-8 rounded-full"
-        />
-        <h1>
-          {participant.firstName} {participant.lastName}
-        </h1>
+    <div className="flex flex-col h-dvh">
+      <div
+        className={`lg:flex items-center p-4 bg-gray-200 space-x-2 ${selectedWindow === "PROFILE_WINDOW" ? "hidden" : "flex"}`}
+      >
+        <button>
+          <ArrowLeft
+            size={24}
+            onClick={(e) => {
+              router.push("/messages");
+            }}
+          />
+        </button>
+        <div
+          className="flex items-center space-x-2 cursor-pointer"
+          onClick={(e) => {
+            setSelectedWindow("PROFILE_WINDOW");
+          }}
+        >
+          <img
+            src={participant.imageUrl || ""}
+            alt="profile"
+            className="w-8 h-8 rounded-full"
+          />
+          <h1>
+            {participant.firstName} {participant.lastName}
+          </h1>
+        </div>
       </div>
-      <div className="flex-1 overflow-y-auto">
-        {loading && (
-          <CircleDashed className="m-auto mt-4 animate-spin" size={32} />
-        )}
-        <div id="loading" style={{ height: "20px" }} ref={loadingRef}></div>
-        {messages?.map((message) => (
-          <div
-            ref={lastFetchedBatchesLastId === message.id ? scrollRef : null}
-            key={message.id}
-            className={`p-4 m-4 bg-gray-100 w-2/3 rounded-lg ${
-              getMessageSender(message)?.isSelfMessage ? "ml-auto" : "mr-auto"
-            }`}
-          >
-            <div className="flex flex-col space-y-4">
-              <div className="flex items-center space-x-2">
-                <img
-                  className="w-8 h-8 bg-gray-300 rounded-full"
-                  src={getMessageSender(message)?.imageUrl || ""}
-                  alt=""
-                />
-                <p>{`${getMessageSender(message)?.firstName} ${getMessageSender(message)?.lastName}`}</p>
-              </div>
+      <div className="flex flex-1 overflow-y-hidden">
+        <div className="bg-blue-50 w-[300px] hidden lg:block">threads bar</div>
+        {/* the main chat area */}
+        <div
+          className={`bg-red-50 flex-1 lg:flex flex-col ${selectedWindow === "PROFILE_WINDOW" ? "hidden" : "flex"}`}
+        >
+          <div className="flex-1 overflow-y-auto">
+            {loading && (
+              <CircleDashed className="m-auto mt-4 animate-spin" size={32} />
+            )}
+            <div id="loading" style={{ height: "20px" }} ref={loadingRef}></div>
+            {messages?.map((message) => (
+              <div
+                ref={lastFetchedBatchesLastId === message.id ? scrollRef : null}
+                key={message.id}
+                className={`p-4 m-4 bg-gray-100 w-2/3 rounded-lg ${
+                  getMessageSender(message)?.isSelfMessage
+                    ? "ml-auto"
+                    : "mr-auto"
+                }`}
+              >
+                <div className="flex flex-col space-y-4">
+                  <div className="flex items-center space-x-2">
+                    <img
+                      className="w-8 h-8 bg-gray-300 rounded-full"
+                      src={getMessageSender(message)?.imageUrl || ""}
+                      alt=""
+                    />
+                    <p>{`${getMessageSender(message)?.firstName} ${getMessageSender(message)?.lastName}`}</p>
+                  </div>
 
-              <div>
-                <p>{message.content}</p>
-                {/* sent at 2024-10-08T17:35:01.811539+00:00 format it*/}
-                <p className="text-xs font-light">
-                  {formatMessageDate(message.sent_at)}
-                </p>
+                  <div>
+                    <p>{message.content}</p>
+                    <p className="text-xs font-light">
+                      {formatMessageDate(message.sent_at)}
+                    </p>
+                  </div>
+                </div>
               </div>
+            ))}
+          </div>
+          <div className="flex items-center space-x-4 p-4 relative">
+            <input
+              value={inputText}
+              onFocus={() => setShowPicker(false)}
+              onChange={(e) => setInputText(e.target.value)}
+              type="text"
+              className="w-full border border-gray-300 rounded p-2 "
+              onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+              ref={inputRef}
+            />
+
+            <Smile
+              onClick={() => setShowPicker((val) => !val)}
+              strokeWidth={1.5}
+              color="black"
+              fill="yellow"
+              size={32}
+            />
+
+            <Picker
+              open={showPicker}
+              onEmojiClick={onEmojiClick}
+              className="max-w-[calc(100vw-100px)]"
+              style={{
+                width: "300px",
+                position: "absolute",
+                bottom: "70px",
+                right: "80px",
+              }}
+            />
+            <button
+              className="bg-blue-500 text-white px-4 py-2 rounded"
+              disabled={sendingText ? true : false}
+              onClick={sendMessage}
+            >
+              {sendingText ? (
+                <CircleDashed size={24} className="animate-spin" />
+              ) : (
+                <ArrowRight size={24} />
+              )}
+            </button>
+          </div>
+        </div>
+        <div
+          className={`w-full lg:w-[300px] overflow-hidden lg:flex ${selectedWindow === "PROFILE_WINDOW" ? "flex" : "hidden"}`}
+        >
+          <div className="flex flex-col p-4 w-full">
+            <XIcon
+              size={32}
+              className="cursor-pointer block ml-auto mb-4 lg:hidden"
+              onClick={(e) => setSelectedWindow("CHAT_WINDOW")}
+            />
+            <div className="flex-1 flex flex-col overflow-auto">
+              <img
+                src={participant.imageUrl || ""}
+                alt="profile"
+                className="w-24 h-24 rounded-full mx-auto"
+              />
+              <p className="text-center mt-4 text-xl font-semibold">
+                {participant.firstName} {participant.lastName}
+              </p>
+              <p className="text-center text-sm text-gray-500">
+                {participant.email}
+              </p>
+              <p className="text-center mt-4">{participant.bio}</p>
             </div>
           </div>
-        ))}
-      </div>
-      <div className="flex items-center space-x-4 p-4 relative">
-        <input
-          value={inputText}
-          onFocus={() => setShowPicker(false)}
-          onChange={(e) => setInputText(e.target.value)}
-          type="text"
-          className="w-full border border-gray-300 rounded p-2 "
-          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-          ref={inputRef}
-        />
-
-        <img
-          className="emoji-icon"
-          src="https://icons.getbootstrap.com/assets/icons/emoji-smile.svg"
-          onClick={() => setShowPicker((val) => !val)}
-        />
-        <Picker
-          open={showPicker}
-          onEmojiClick={onEmojiClick}
-          style={{
-            position: "absolute",
-            bottom: "50px",
-            right: "50px",
-            maxWidth: "300px",
-          }}
-        />
-        <button
-          className="bg-blue-500 text-white px-4 py-2 rounded"
-          disabled={sendingText ? true : false}
-          onClick={sendMessage}
-        >
-          {sendingText ? (
-            <CircleDashed size={24} className="animate-spin" />
-          ) : (
-            <ArrowRight size={24} />
-          )}
-        </button>
+        </div>
       </div>
     </div>
   );
