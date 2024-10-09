@@ -29,11 +29,11 @@ export default function Messages() {
 
   return (
     <PageScaffold route="/messages">
-      <div className="flex flex-col space-y-4 p-4 flex-1 overflow-hidden lg:w-[60vw] m-auto">
+      <div className="flex flex-col space-y-4 lg:p-4 flex-1 overflow-hidden lg:w-[60vw] w-full m-auto mt-4">
         <input
           type="text"
           placeholder="Search"
-          className="w-full p-2 border border-gray-200 rounded-lg"
+          className="m-auto p-2 border border-gray-200 rounded-lg w-[90%]"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
@@ -45,7 +45,7 @@ export default function Messages() {
               <Link href={`/messages/${thread.id}`} key={thread.id}>
                 <div
                   key={thread.id}
-                  className="flex items-center space-x-4 p-4 bg-white rounded-lg shadow-md border border-gray-200 mr-4"
+                  className="flex items-center space-x-4 p-4 bg-white rounded-lg shadow-md border border-gray-200 w-[90%] m-auto"
                 >
                   <img
                     src={image}
