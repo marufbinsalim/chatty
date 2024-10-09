@@ -3,7 +3,15 @@ import { supabase } from "@/utils/supabase/uiClient";
 import { useUser } from "@clerk/nextjs";
 import { ArrowRight, CircleDashed } from "lucide-react";
 import { useRouter } from "next/router";
-import { useEffect, useRef, useState } from "react";
+import { LegacyRef, useEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
+
+const Picker = dynamic(
+  () => {
+    return import("emoji-picker-react");
+  },
+  { ssr: false },
+);
 
 const FETCH_LIMIT = 15;
 
@@ -34,6 +42,19 @@ export default function Thread() {
   >(null);
   const [inputText, setInputText] = useState<string>("");
   const [sendingText, setSendingText] = useState<Boolean>(false);
+  const [showPicker, setShowPicker] = useState(false);
+  const inputRef = useRef<LegacyRef<HTMLInputElement> | null>(null);
+
+  const onEmojiClick = (event: any) => {
+    console.log(JSON.stringify(event));
+    setInputText((inputText) => inputText + event.emoji);
+    setShowPicker(false);
+
+    // focus on input after emoji is selected to continue typing
+    if (inputRef) {
+      (inputRef as any).current.focus();
+    }
+  };
 
   const fetchMessages = async (pageNum: number) => {
     canLoadMore.current = false;
@@ -139,6 +160,10 @@ export default function Thread() {
 
     setInputText("");
     setSendingText(false);
+
+    if (inputRef) {
+      (inputRef as any).current.focus();
+    }
   }
 
   function getMessageSender(message: Message): {
@@ -249,12 +274,31 @@ export default function Thread() {
           </div>
         ))}
       </div>
-      <div className="flex items-center space-x-4 p-4">
+      <div className="flex items-center space-x-4 p-4 relative">
         <input
           value={inputText}
+          onFocus={() => setShowPicker(false)}
           onChange={(e) => setInputText(e.target.value)}
           type="text"
           className="w-full border border-gray-300 rounded p-2 "
+          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+          ref={inputRef}
+        />
+
+        <img
+          className="emoji-icon"
+          src="https://icons.getbootstrap.com/assets/icons/emoji-smile.svg"
+          onClick={() => setShowPicker((val) => !val)}
+        />
+        <Picker
+          open={showPicker}
+          onEmojiClick={onEmojiClick}
+          style={{
+            position: "absolute",
+            bottom: "50px",
+            right: "50px",
+            maxWidth: "300px",
+          }}
         />
         <button
           className="bg-blue-500 text-white px-4 py-2 rounded"
