@@ -1,5 +1,7 @@
 import { supabase } from "@/utils/supabase/uiClient";
 import { SignOutButton, useUser } from "@clerk/nextjs";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   ArrowLeft,
   ArrowLeftIcon,
@@ -77,6 +79,14 @@ function ProfileInfoCard({
                 ? `http://localhost:3000/shared/${username}`
                 : `https://www.chattypals.vercel.app/shared/${username}`,
             );
+            toast.success("Link copied to clipboard", {
+              position: "bottom-center",
+              style: {
+                margin: "auto",
+                marginBottom: "1rem",
+                maxWidth: "90%",
+              },
+            });
           }}
           size={24}
         />
@@ -167,15 +177,34 @@ function EditInformationCard({
   async function saveChanges() {
     setIsUpdating(true);
 
-    if (!username || username.trim() === "") {
-      alert("Username cannot be empty");
+    if (!firstName || firstName.trim() === "") {
+      toast.error("First name cannot be empty", {
+        position: "bottom-center",
+        style: {
+          margin: "auto",
+          marginBottom: "1rem",
+          maxWidth: "90%",
+        },
+      });
       setIsUpdating(false);
       return;
     }
 
-    if (user.unsafeMetadata.username !== username) {
-      console.log("username changed");
+    if (!username || username.trim() === "") {
+      toast.error("Username cannot be empty", {
+        position: "bottom-center",
+        style: {
+          margin: "auto",
+          marginBottom: "1rem",
+          maxWidth: "90%",
+        },
+      });
+      setIsUpdating(false);
+      return;
+    }
 
+    // username has changed
+    if (user.unsafeMetadata.username !== username) {
       // search for username in database
       const { data, error } = await supabase
         .from("users")
@@ -185,37 +214,44 @@ function EditInformationCard({
       let isUsernameTaken = data?.length !== 0;
 
       if (isUsernameTaken) {
-        alert("Username is already taken");
+        toast.error("Username is already taken", {
+          position: "bottom-center",
+          style: {
+            margin: "auto",
+            marginBottom: "1rem",
+            maxWidth: "90%",
+          },
+        });
         setIsUpdating(false);
         return;
       }
-
-      await supabase.from("users").upsert({
-        id: user.id,
-        username: username,
-      });
     }
 
-    if (!firstName || firstName.trim() === "") {
-      alert("First name cannot be empty");
-      setIsUpdating(false);
-      return;
-    }
-
+    // update the first name, last name and bio in the clerk database
     await user?.update({
       firstName,
       lastName,
       unsafeMetadata: { bio, username },
     });
+
     const { error } = await supabase.from("users").upsert({
       id: user.id,
       firstName: firstName || "",
       lastName: lastName || "",
       bio: bio,
+      username: username,
     });
     user.reload();
     setIsUpdating(false);
     setEditing(false);
+    toast.success("Profile updated successfully", {
+      position: "bottom-center",
+      style: {
+        margin: "auto",
+        marginBottom: "1rem",
+        maxWidth: "90%",
+      },
+    });
   }
 
   return (
@@ -387,6 +423,7 @@ export default function Profile() {
           />
         )}
       </div>
+      <ToastContainer />
     </div>
   );
 }
