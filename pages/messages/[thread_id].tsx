@@ -26,6 +26,7 @@ import useRealtimeThreads, {
   Thread as ThreadType,
 } from "@/hooks/useRealtimeThreads";
 import Link from "next/link";
+import { truncateString } from "@/utils/format/textPreview";
 
 const Picker = dynamic(
   () => {
@@ -61,7 +62,6 @@ export default function Thread() {
   const loadingRef = useRef<HTMLDivElement | null>(null);
   const canLoadMore = useRef<boolean>(true);
   const scrollRef = useRef<HTMLDivElement | null>(null);
-  const scrollThreadRef = useRef<HTMLDivElement | null>(null);
   const [lastFetchedBatchesLastId, setLastFetchedBatchesLastId] = useState<
     string | null
   >(null);
@@ -160,13 +160,6 @@ export default function Thread() {
   }, [page]);
 
   // if threadId changes, set page to 1, clear messages, canLoadMore to true
-  //
-  useEffect(() => {
-    canLoadMore.current = true;
-    setLastFetchedBatchesLastId(null);
-    setMessages(null);
-    setPage(1);
-  }, [threadId]);
 
   const handleScroll = (entries: IntersectionObserverEntry[]) => {
     const target = entries[0];
@@ -288,7 +281,7 @@ export default function Thread() {
   return (
     <div className="flex flex-col h-dvh">
       <div
-        className={`lg:flex items-center p-4 bg-gray-200 space-x-2 ${selectedWindow === "PROFILE_WINDOW" ? "hidden" : "flex"}`}
+        className={`lg:flex items-center p-4 bg-gray-200 space-x-4 ${selectedWindow === "PROFILE_WINDOW" ? "hidden" : "flex"}`}
       >
         <button>
           <ArrowLeft
@@ -315,7 +308,7 @@ export default function Thread() {
         </div>
       </div>
       <div className="flex flex-1 overflow-y-hidden">
-        <div className="w-[400px] hidden lg:flex flex-col">
+        <div className="w-[350px] hidden lg:flex flex-col">
           <div className="flex flex-col space-y-4 p-4 rounded-lg shadow-md flex-1 overflow-hidden">
             <input
               type="text"
@@ -326,7 +319,6 @@ export default function Thread() {
             />
 
             <div className="space-y-4 flex flex-col flex-1 overflow-auto">
-              <div ref={scrollThreadRef} />
               {putActiveThreadOnTop(threadId, threads)?.map((thread) => {
                 const { id, name, image } = getUserInfo(thread);
                 return (
@@ -335,14 +327,8 @@ export default function Thread() {
                     className={`flex items-center space-x-4 p-4  rounded-lg shadow-md border border-gray-200 cursor-pointer mr-4 ${
                       thread.id === threadId ? "bg-gray-200" : "bg-white"
                     }`}
-                    onClick={(e) => {
-                      setThreadId(thread.id);
-                      if (scrollThreadRef.current) {
-                        scrollThreadRef.current.scrollIntoView({
-                          block: "start",
-                          behavior: "smooth",
-                        });
-                      }
+                    onClick={async (e) => {
+                      window.location.href = `/messages/${thread.id}`;
                     }}
                   >
                     <img
@@ -353,7 +339,7 @@ export default function Thread() {
                     <div>
                       <h2 className="text-lg font-semibold">{name}</h2>
                       <p className="text-gray-500">
-                        {thread.last_message_content}
+                        {truncateString(thread.last_message_content, 30)}
                       </p>
                       <p>{formatMessageDate(thread.last_message_created_at)}</p>
                     </div>
@@ -446,7 +432,7 @@ export default function Thread() {
           </div>
         </div>
         <div
-          className={`w-full lg:w-[400px] overflow-hidden lg:flex ${selectedWindow === "PROFILE_WINDOW" ? "flex" : "hidden"}`}
+          className={`w-full lg:w-[300px] overflow-hidden lg:flex ${selectedWindow === "PROFILE_WINDOW" ? "flex" : "hidden"}`}
         >
           <div className="flex flex-col p-4 w-full">
             <XIcon

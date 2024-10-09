@@ -1,7 +1,7 @@
 import { supabase } from "@/utils/supabase/uiClient";
 import { useEffect, useState } from "react";
 
-export default function useMessenger(threadId: any, userId: any) {
+export default function useMessenger(threadId: string | null, userId: any) {
   const [participants, setParticipants] = useState<any[] | null>([]);
   const [participant, setParticipant] = useState<{
     user_id: string | null;

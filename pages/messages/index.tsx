@@ -1,6 +1,7 @@
 import PageScaffold from "@/components/PageScaffolding";
 import useRealtimeThreads, { Thread } from "@/hooks/useRealtimeThreads";
 import { formatMessageDate } from "@/utils/format/date";
+import { truncateString } from "@/utils/format/textPreview";
 import { supabase } from "@/utils/supabase/uiClient";
 import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
@@ -54,7 +55,7 @@ export default function Messages() {
                   <div>
                     <h2 className="text-lg font-semibold">{name}</h2>
                     <p className="text-gray-500">
-                      {thread.last_message_content}
+                      {truncateString(thread.last_message_content, 50)}
                     </p>
                     <p>{formatMessageDate(thread.last_message_created_at)}</p>
                   </div>
