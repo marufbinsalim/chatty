@@ -22,7 +22,9 @@ import {
 } from "react";
 import dynamic from "next/dynamic";
 import { formatMessageDate } from "@/utils/format/date";
-import useRealtimeThreads, { Thread } from "@/hooks/useRealtimeThreads";
+import useRealtimeThreads, {
+  Thread as ThreadType,
+} from "@/hooks/useRealtimeThreads";
 import Link from "next/link";
 
 const Picker = dynamic(
@@ -59,6 +61,7 @@ export default function Thread() {
   const loadingRef = useRef<HTMLDivElement | null>(null);
   const canLoadMore = useRef<boolean>(true);
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  const scrollThreadRef = useRef<HTMLDivElement | null>(null);
   const [lastFetchedBatchesLastId, setLastFetchedBatchesLastId] = useState<
     string | null
   >(null);
@@ -227,7 +230,7 @@ export default function Thread() {
 
   const { threads, searchTerm, setSearchTerm } = useRealtimeThreads(user?.id);
 
-  function getUserInfo(thread: Thread) {
+  function getUserInfo(thread: ThreadType) {
     if (user?.id === thread.sender_id) {
       return {
         id: thread.recipient_id,
@@ -263,7 +266,10 @@ export default function Thread() {
     };
   }, [loading]);
 
-  function putActiveThreadOnTop(threadId: string, threads: Thread[] | null) {
+  function putActiveThreadOnTop(
+    threadId: string | null,
+    threads: ThreadType[] | null,
+  ) {
     if (!threads) return null;
     const threadIndex = threads.findIndex((thread) => thread.id === threadId);
     if (threadIndex === -1) return threads;
@@ -309,8 +315,8 @@ export default function Thread() {
         </div>
       </div>
       <div className="flex flex-1 overflow-y-hidden">
-        <div className="bg-blue-50 w-[400px] hidden lg:flex flex-col">
-          <div className="flex flex-col space-y-4 p-4 bg-gray-100 rounded-lg shadow-md flex-1 overflow-hidden">
+        <div className="w-[400px] hidden lg:flex flex-col">
+          <div className="flex flex-col space-y-4 p-4 rounded-lg shadow-md flex-1 overflow-hidden">
             <input
               type="text"
               placeholder="Search"
@@ -320,16 +326,23 @@ export default function Thread() {
             />
 
             <div className="space-y-4 flex flex-col flex-1 overflow-auto">
+              <div ref={scrollThreadRef} />
               {putActiveThreadOnTop(threadId, threads)?.map((thread) => {
                 const { id, name, image } = getUserInfo(thread);
                 return (
                   <div
                     key={thread.id}
-                    className={`flex items-center space-x-4 p-4  rounded-lg shadow-md border border-gray-200 cursor-pointer ${
+                    className={`flex items-center space-x-4 p-4  rounded-lg shadow-md border border-gray-200 cursor-pointer mr-4 ${
                       thread.id === threadId ? "bg-gray-200" : "bg-white"
                     }`}
                     onClick={(e) => {
                       setThreadId(thread.id);
+                      if (scrollThreadRef.current) {
+                        scrollThreadRef.current.scrollIntoView({
+                          block: "start",
+                          behavior: "smooth",
+                        });
+                      }
                     }}
                   >
                     <img
@@ -352,7 +365,7 @@ export default function Thread() {
         </div>
         {/* the main chat area */}
         <div
-          className={`bg-red-50 flex-1 lg:flex flex-col ${selectedWindow === "PROFILE_WINDOW" ? "hidden" : "flex"}`}
+          className={`bg-gray-100 flex-1 lg:flex flex-col ${selectedWindow === "PROFILE_WINDOW" ? "hidden" : "flex"}`}
         >
           <div className="flex-1 overflow-y-auto">
             {loading && (
@@ -363,7 +376,7 @@ export default function Thread() {
               <div
                 ref={lastFetchedBatchesLastId === message.id ? scrollRef : null}
                 key={message.id}
-                className={`p-4 m-4 bg-gray-100 w-2/3 rounded-lg ${
+                className={`p-4 m-4 bg-gray-300 w-2/3 rounded-lg ${
                   getMessageSender(message)?.isSelfMessage
                     ? "ml-auto"
                     : "mr-auto"
