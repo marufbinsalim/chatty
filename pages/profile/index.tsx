@@ -60,25 +60,17 @@ function ProfileInfoCard({
         </div>
       )}
 
-      <div className="flex items-center justify-center w-full space-x-2">
-        <p className="text-center text-gray-600">
-          {
-            // if it's in development mode, show the localhost link
-            process.env.NODE_ENV === "development" ? (
-              <span className="text-gray-400">
-                {" "}
-                (http://localhost:3000/shared/{username})
-              </span>
-            ) : (
-              // if it's in production mode, show the production link
-              <span className="text-gray-400">
-                {" "}
-                (https://www.chattypals.vercel.app/shared/{username})
-              </span>
-            )
-          }
+      <div className="flex items-center justify-center w-full max-w-lg space-x-2 space-y-2 flex-wrap bg-gray-200 rounded-lg p-4 mt-4">
+        <p className="text-center text-gray-600 text-wrap break-all">
+          <span>
+            {process.env.NODE_ENV === "development"
+              ? `http://localhost:3000/shared/${username}`
+              : `https://www.chattypals.vercel.app/shared/${username}`}
+          </span>
+          )
         </p>
         <Share2Icon
+          className="text-blue-500 cursor-pointer"
           onClick={() => {
             navigator.clipboard.writeText(
               process.env.NODE_ENV === "development"
