@@ -17,7 +17,6 @@ export default async function handler(
   }
 
   let supabase = createClient(req, res);
-  console.log(user);
   const { error } = await supabase.from("users").upsert([
     {
       id: user.id,
@@ -28,7 +27,7 @@ export default async function handler(
     },
   ]);
 
-  console.log(error);
+  console.error(error);
 
   res.redirect("/");
 }

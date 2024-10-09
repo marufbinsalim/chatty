@@ -12,10 +12,7 @@ export default function useDiscover({ query }: { query: string }) {
   const { user } = useUser();
 
   useEffect(() => {
-    console.log("query", query);
-
     async function fetchUsers() {
-      console.log("fetching users");
       try {
         setLoading(true);
         const { data, error, count } = await supabase

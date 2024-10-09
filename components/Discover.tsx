@@ -32,7 +32,6 @@ export default function Discover() {
 
   async function createOrGoToThread(targetUserId: string) {
     if (!user) return;
-    console.log("createOrGoToThread", user.id, targetUserId);
 
     const { data, error } = await supabase.rpc("get_direct_thread_id", {
       user_id_1: user.id,
@@ -44,7 +43,6 @@ export default function Discover() {
     }
 
     if (data) {
-      console.log("data", data);
       router.push(`/messages/${data}`);
       return;
     }
@@ -55,8 +53,6 @@ export default function Discover() {
       .insert({})
       .select()
       .single();
-
-    console.log("newThreadData", newThreadData);
 
     if (newThreadError) {
       console.error("Error inserting new thread:", newThreadError);
@@ -80,8 +76,6 @@ export default function Discover() {
         ])
         .select();
 
-    console.log("newParticipantsData", newParticipantsData);
-
     if (newParticipantsError) {
       console.error("Error inserting new participants:", newParticipantsError);
       return;
@@ -101,7 +95,6 @@ export default function Discover() {
       .select()
       .single();
 
-    console.log("newMessageData", newMessageData, newMessageError);
     router.push(`/messages/${threadId}`);
   }
 

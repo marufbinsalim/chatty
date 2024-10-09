@@ -27,8 +27,6 @@ export default function useMessenger(threadId: any, userId: any) {
       }
 
       if (data) {
-        console.log(userId, data);
-
         let isPartOfThread = false;
         for (let i = 0; i < data.length; i++) {
           if (data[i].user_id === userId) {

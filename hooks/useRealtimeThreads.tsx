@@ -12,7 +12,6 @@ export default function useRealtimeThreads(userId: any) {
         "postgres_changes",
         { event: "*", schema: "public", table: "*" },
         (payload) => {
-          console.log("Threads changed!", payload);
           setThreadsChanged((tc) => !tc);
         },
       )
@@ -39,7 +38,6 @@ export default function useRealtimeThreads(userId: any) {
               thread.last_message_content !== "**start_of_conversation**",
           ),
         );
-        console.log(data);
       } else {
         console.error(error);
       }

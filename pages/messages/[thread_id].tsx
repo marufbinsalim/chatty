@@ -68,7 +68,6 @@ export default function Thread() {
     useState<WindowType>("CHAT_WINDOW");
 
   const onEmojiClick = (event: any) => {
-    console.log(JSON.stringify(event));
     setInputText((inputText) => inputText + event.emoji);
     setShowPicker(false);
 

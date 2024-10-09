@@ -119,7 +119,6 @@ function EditInformationCard({
 
   useEffect(() => {
     async function updateImageInDatabase() {
-      console.log("updating image in database", user.imageUrl);
       const { error } = await supabase.from("users").upsert({
         id: user.id,
         imageUrl: user.imageUrl,
