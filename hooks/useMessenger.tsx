@@ -10,6 +10,7 @@ export default function useMessenger(threadId: string | null, userId: any) {
     imageUrl: string | null;
     email: string | null;
     bio: string | null;
+    username: string | null;
   } | null>(null); // [participant, setParticipant
   const [messages, setMessages] = useState<any[]>([]);
   const [isPartOfThread, setIsPartOfThread] = useState<boolean>(false);

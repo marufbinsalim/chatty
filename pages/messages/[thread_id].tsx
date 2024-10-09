@@ -447,7 +447,10 @@ export default function Thread() {
                 className="w-24 h-24 rounded-full mx-auto"
               />
               <p className="text-center mt-4 text-xl font-semibold">
-                {participant.firstName} {participant.lastName}
+                {participant.firstName || ""} {participant.lastName || ""}
+              </p>
+              <p className="text-center text-sm text-gray-500">
+                @{participant.username}
               </p>
               <p className="text-center text-sm text-gray-500">
                 {participant.email}
