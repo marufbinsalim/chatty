@@ -31,7 +31,7 @@ export default async function handler(
     user.id,
   );
 
-  console.log(username);
+  console.log(username, userId);
 
   let supabase = createClient(req, res);
   const { error } = await supabase.from("users").upsert([
@@ -46,6 +46,12 @@ export default async function handler(
   ]);
 
   console.error(error);
+  let redirectTo = "/";
+  // there is a query parameter called redirect
+  console.log(req.query.redirect);
+  if (req.query.redirect && req.query.redirect.includes("shared")) {
+    redirectTo = req.query.redirect as string;
+  }
 
-  res.redirect("/");
+  res.redirect(redirectTo);
 }

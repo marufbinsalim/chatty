@@ -1,7 +1,16 @@
 import { SignInButton } from "@clerk/nextjs";
 import { MessageCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function HomeScreen() {
+  const router = useRouter();
+  const currentUrl = window.location.href;
+  const isItShared = currentUrl.includes("shared");
+  const lastAfterSlash = currentUrl.substring(
+    currentUrl.lastIndexOf("/") + 1,
+    currentUrl.length,
+  );
+
   return (
     <div
       className="flex flex-col items-center justify-center h-dvh py-2 bg-cover bg-center"
@@ -19,7 +28,13 @@ export default function HomeScreen() {
         A place to connect with people from all around the world.
         <br />
       </p>
-      <SignInButton>
+      <SignInButton
+        forceRedirectUrl={
+          isItShared
+            ? `/api/new-user?redirect=/shared/${lastAfterSlash}`
+            : "/api/new-user"
+        }
+      >
         <button className="p-2 px-4 rounded-3xl bg-white mt-6 font-thin">
           Get Started
         </button>
