@@ -50,7 +50,9 @@ export default function Discover() {
     // else insert new thread and add users to participants table
     const { data: newThreadData, error: newThreadError } = await supabase
       .from("threads")
-      .insert({})
+      .insert({
+        created_by: user.id,
+      })
       .select()
       .single();
 

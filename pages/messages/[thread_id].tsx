@@ -21,6 +21,7 @@ import {
   useState,
 } from "react";
 import dynamic from "next/dynamic";
+import { formatMessageDate } from "@/utils/format/date";
 
 const Picker = dynamic(
   () => {
@@ -211,16 +212,6 @@ export default function Thread() {
           imageUrl: participant?.imageUrl,
           isSelfMessage: false,
         };
-  }
-
-  function formatMessageDate(date: string): string {
-    {
-    }
-
-    let dateObj = new Date(date);
-    let formattedDate = dateObj.toLocaleDateString();
-    let formattedTime = dateObj.toLocaleTimeString();
-    return `${formattedDate} ${formattedTime}`;
   }
 
   useEffect(() => {
