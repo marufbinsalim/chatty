@@ -10,8 +10,11 @@ import {
   Edit2Icon,
   EditIcon,
   InfoIcon,
+  LogOut,
   LucideAlignHorizontalDistributeCenter,
   Save,
+  Share2Icon,
+  ShareIcon,
   StepBack,
   XIcon,
 } from "lucide-react";
@@ -46,6 +49,7 @@ function ProfileInfoCard({
         {firstName} {lastName}
       </p>
       <p className="text-center font-bold text-gray-600 mb-4">@{username}</p>
+
       {email && <p className="text-center text-gray-600 mb-4">{email}</p>}
       {bio && (
         <div className="w-full mt-8 max-w-lg">
@@ -55,9 +59,41 @@ function ProfileInfoCard({
           </p>
         </div>
       )}
+
+      <div className="flex items-center justify-center w-full space-x-2">
+        <p className="text-center text-gray-600">
+          {
+            // if it's in development mode, show the localhost link
+            process.env.NODE_ENV === "development" ? (
+              <span className="text-gray-400">
+                {" "}
+                (http://localhost:3000/shared/{username})
+              </span>
+            ) : (
+              // if it's in production mode, show the production link
+              <span className="text-gray-400">
+                {" "}
+                (https://www.chattypals.vercel.app/shared/{username})
+              </span>
+            )
+          }
+        </p>
+        <Share2Icon
+          onClick={() => {
+            navigator.clipboard.writeText(
+              process.env.NODE_ENV === "development"
+                ? `http://localhost:3000/shared/${username}`
+                : `https://www.chattypals.vercel.app/shared/${username}`,
+            );
+          }}
+          size={24}
+        />
+      </div>
+
       <SignOutButton>
-        <button className="bg-red-500 text-white p-2 rounded-md mt-4 hover:bg-red-600 transition-colors duration-300">
-          Sign Out
+        <button className="flex bg-red-500 text-white p-2 rounded-md mt-4 hover:bg-red-600 transition-colors duration-300 gap-2">
+          <p>Sign Out</p>
+          <LogOut size={24} />
         </button>
       </SignOutButton>
     </div>
