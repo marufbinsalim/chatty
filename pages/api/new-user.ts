@@ -16,6 +16,23 @@ export default async function handler(
     return new NextResponse("User does not exist", { status: 404 });
   }
 
+  async function getUsername(email: string, id: string) {
+    let username = email.split("@")[0] + Math.floor(Math.random() * 10000);
+    await clerkClient().users.updateUser(id, {
+      unsafeMetadata: {
+        username: username,
+      },
+    });
+    return username;
+  }
+
+  let username = await getUsername(
+    user.emailAddresses[0].emailAddress,
+    user.id,
+  );
+
+  console.log(username);
+
   let supabase = createClient(req, res);
   const { error } = await supabase.from("users").upsert([
     {
@@ -24,6 +41,7 @@ export default async function handler(
       firstName: user.firstName,
       lastName: user.lastName,
       imageUrl: user.imageUrl,
+      username: username,
     },
   ]);
 

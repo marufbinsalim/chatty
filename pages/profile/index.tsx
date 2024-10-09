@@ -24,12 +24,14 @@ function ProfileInfoCard({
   lastName,
   email,
   bio,
+  username,
 }: {
   imageURL: string | null;
   firstName: string | null;
   lastName: string | null;
   email: string | null;
   bio: string | null;
+  username: string | null;
 }) {
   return (
     <div className="flex flex-col flex-1 p-4 items-center">
@@ -40,14 +42,15 @@ function ProfileInfoCard({
           className="rounded-full h-20 w-20 mb-4 border-4 border-gray-200"
         />
       )}
-      <p className="text-center text-2xl font-bold text-gray-800 mb-2">
+      <p className="text-center text-xl font-bold text-gray-800 mb-2">
         {firstName} {lastName}
       </p>
+      <p className="text-center font-bold text-gray-600 mb-4">@{username}</p>
       {email && <p className="text-center text-gray-600 mb-4">{email}</p>}
       {bio && (
         <div className="w-full mt-8 max-w-lg">
           <p className="text-xl font-semibold text-gray-800 mb-2">Bio</p>
-          <p className="border border-gray-200 shadow-sm p-4 rounded-lg max-h-[300px] overflow-auto text-gray-700">
+          <p className="border border-gray-200 shadow-sm p-4 rounded-lg text-gray-700">
             {bio}
           </p>
         </div>
@@ -86,6 +89,8 @@ function EditInformationCard({
   firstName,
   lastName,
   bio,
+  username,
+  setUsername,
   setFirstName,
   setLastName,
   setBio,
@@ -101,6 +106,8 @@ function EditInformationCard({
   setLastName: (lastName: string) => void;
   setBio: (bio: string) => void;
   email: string | null;
+  username: string;
+  setUsername: (username: string) => void;
 }) {
   const [image, setImage] = useState<File | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -131,10 +138,40 @@ function EditInformationCard({
 
   async function saveChanges() {
     setIsUpdating(true);
+
+    if (!username || username.trim() === "") {
+      alert("Username cannot be empty");
+      setIsUpdating(false);
+      return;
+    }
+
+    if (user.unsafeMetadata.username !== username) {
+      console.log("username changed");
+
+      // search for username in database
+      const { data, error } = await supabase
+        .from("users")
+        .select("id")
+        .eq("username", username);
+
+      let isUsernameTaken = data?.length !== 0;
+
+      if (isUsernameTaken) {
+        alert("Username is already taken");
+        setIsUpdating(false);
+        return;
+      }
+
+      await supabase.from("users").upsert({
+        id: user.id,
+        username: username,
+      });
+    }
+
     await user?.update({
       firstName,
       lastName,
-      unsafeMetadata: { bio },
+      unsafeMetadata: { bio, username },
     });
     const { error } = await supabase.from("users").upsert({
       id: user.id,
@@ -162,7 +199,6 @@ function EditInformationCard({
             }}
           />
 
-          {/* Custom round button styled as an image icon */}
           <label
             htmlFor="file-input"
             className="flex items-center justify-center w-20 h-20 rounded-full bg-gray-100 cursor-pointer overflow-hidden"
@@ -176,35 +212,63 @@ function EditInformationCard({
         </div>
 
         {email && (
+          <div className="w-full">
+            <h1 className="text-xl font-bold text-gray-800 mt-4">Email</h1>
+            <input
+              type="text"
+              placeholder="Email"
+              className="w-full md:w-96 p-2 mt-4 mb-2 bg-white border border-gray-300 rounded-lg text-gray-600 shadow-sm focus:ring-2 focus:ring-blue-300 focus:border-blue-300 disabled:bg-gray-100"
+              value={email}
+              disabled
+            />
+          </div>
+        )}
+
+        <div className="w-full">
+          <h1 className="text-xl font-bold text-gray-800 mt-4">Username</h1>
           <input
             type="text"
-            placeholder="Email"
-            className="w-full md:w-96 p-2 mt-4 mb-2 bg-white border border-gray-300 rounded-lg text-gray-600 shadow-sm focus:ring-2 focus:ring-blue-300 focus:border-blue-300 disabled:bg-gray-100"
-            value={email}
-            disabled
+            placeholder="Username"
+            className="w-full md:w-96 p-2 my-2 bg-white border border-gray-300 rounded-lg text-gray-800 shadow-sm focus:ring-2 focus:ring-blue-300 focus:border-blue-300"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
           />
-        )}
-        <input
-          type="text"
-          placeholder="First Name"
-          className="w-full md:w-96 p-2 my-2 bg-white border border-gray-300 rounded-lg text-gray-800 shadow-sm focus:ring-2 focus:ring-blue-300 focus:border-blue-300"
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="Last Name"
-          className="w-full md:w-96 p-2 my-2 bg-white border border-gray-300 rounded-lg text-gray-800 shadow-sm focus:ring-2 focus:ring-blue-300 focus:border-blue-300"
-          value={lastName}
-          onChange={(e) => setLastName(e.target.value)}
-        />
+        </div>
 
-        <textarea
-          value={bio}
-          onChange={(e) => setBio(e.target.value)}
-          placeholder="Bio"
-          className="w-full md:w-96 h-32 p-2 my-2 bg-white border border-gray-300 rounded-lg text-gray-800 shadow-sm focus:ring-2 focus:ring-blue-300 focus:border-blue-300"
-        ></textarea>
+        {
+          <div className="w-full">
+            <h1 className="text-xl font-bold text-gray-800 mt-4">First Name</h1>
+
+            <input
+              type="text"
+              placeholder="First Name"
+              className="w-full md:w-96 p-2 my-2 bg-white border border-gray-300 rounded-lg text-gray-800 shadow-sm focus:ring-2 focus:ring-blue-300 focus:border-blue-300"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+            />
+          </div>
+        }
+        {
+          <div className="w-full">
+            <h1 className="text-xl font-bold text-gray-800 mt-4">Last Name</h1>
+            <input
+              type="text"
+              placeholder="Last Name"
+              className="w-full md:w-96 p-2 my-2 bg-white border border-gray-300 rounded-lg text-gray-800 shadow-sm focus:ring-2 focus:ring-blue-300 focus:border-blue-300"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+            />
+          </div>
+        }
+        <div className="w-full">
+          <h1 className="text-xl font-bold text-gray-800 mt-4">Bio</h1>
+          <textarea
+            value={bio}
+            onChange={(e) => setBio(e.target.value)}
+            placeholder="Bio"
+            className="w-full md:w-96 h-32 p-2 my-2 bg-white border border-gray-300 rounded-lg text-gray-800 shadow-sm focus:ring-2 focus:ring-blue-300 focus:border-blue-300"
+          ></textarea>
+        </div>
 
         <button
           className="bg-blue-500 text-white p-2 rounded-md mt-4 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-colors duration-300 disabled:bg-gray-300 disabled:cursor-not-allowed"
@@ -229,6 +293,7 @@ export default function Profile() {
   const [bio, setBio] = useState<string | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [editing, setEditing] = useState<boolean>(false);
+  const [username, setUsername] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) {
@@ -239,6 +304,8 @@ export default function Profile() {
     // @ts-ignore
     setBio(user.unsafeMetadata["bio"]);
     setImageUrl(user.imageUrl);
+    // @ts-ignore
+    setUsername(user.unsafeMetadata["username"]);
   }, [user, editing]);
 
   if (!isLoaded || !user) {
@@ -246,7 +313,7 @@ export default function Profile() {
   }
 
   return (
-    <div className="h-dvh overflow-auto flex flex-col">
+    <div className="h-dvh flex flex-col overflow-hidden">
       <div className="flex justify-between items-center p-4">
         <Link href="/">
           <ChevronLeft size={32} />
@@ -258,29 +325,34 @@ export default function Profile() {
 
         <EditToggleButton editing={editing} setEditing={setEditing} />
       </div>
-      {editing && (
-        <EditInformationCard
-          user={user}
-          setEditing={setEditing}
-          imageUrl={imageUrl}
-          firstName={firstName || ""}
-          lastName={lastName || ""}
-          bio={bio || ""}
-          setFirstName={setFirstName}
-          setLastName={setLastName}
-          setBio={setBio}
-          email={user.emailAddresses[0].emailAddress}
-        />
-      )}
-      {!editing && (
-        <ProfileInfoCard
-          imageURL={imageUrl}
-          firstName={firstName}
-          lastName={lastName}
-          email={user.emailAddresses[0].emailAddress}
-          bio={bio}
-        />
-      )}
+      <div className="overflow-auto">
+        {editing && (
+          <EditInformationCard
+            user={user}
+            setEditing={setEditing}
+            imageUrl={imageUrl}
+            firstName={firstName || ""}
+            lastName={lastName || ""}
+            bio={bio || ""}
+            username={username || ""}
+            setFirstName={setFirstName}
+            setLastName={setLastName}
+            setBio={setBio}
+            email={user.emailAddresses[0].emailAddress}
+            setUsername={setUsername}
+          />
+        )}
+        {!editing && (
+          <ProfileInfoCard
+            imageURL={imageUrl}
+            firstName={firstName}
+            lastName={lastName}
+            email={user.emailAddresses[0].emailAddress}
+            bio={bio}
+            username={username}
+          />
+        )}
+      </div>
     </div>
   );
 }
