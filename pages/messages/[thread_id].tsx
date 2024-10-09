@@ -22,6 +22,8 @@ import {
 } from "react";
 import dynamic from "next/dynamic";
 import { formatMessageDate } from "@/utils/format/date";
+import useRealtimeThreads, { Thread } from "@/hooks/useRealtimeThreads";
+import Link from "next/link";
 
 const Picker = dynamic(
   () => {
@@ -154,6 +156,15 @@ export default function Thread() {
     }
   }, [page]);
 
+  // if threadId changes, set page to 1, clear messages, canLoadMore to true
+  //
+  useEffect(() => {
+    canLoadMore.current = true;
+    setLastFetchedBatchesLastId(null);
+    setMessages(null);
+    setPage(1);
+  }, [threadId]);
+
   const handleScroll = (entries: IntersectionObserverEntry[]) => {
     const target = entries[0];
     if (target.isIntersecting && !loading) {
@@ -214,6 +225,24 @@ export default function Thread() {
         };
   }
 
+  const { threads, searchTerm, setSearchTerm } = useRealtimeThreads(user?.id);
+
+  function getUserInfo(thread: Thread) {
+    if (user?.id === thread.sender_id) {
+      return {
+        id: thread.recipient_id,
+        name: `${thread.recipient_firstname} ${thread.recipient_lastname}`,
+        image: thread.recipient_imageurl,
+      };
+    } else {
+      return {
+        id: thread.sender_id,
+        name: `${thread.sender_firstname} ${thread.sender_lastname}`,
+        image: thread.sender_imageurl,
+      };
+    }
+  }
+
   useEffect(() => {
     const options = {
       root: null,
@@ -233,6 +262,16 @@ export default function Thread() {
       }
     };
   }, [loading]);
+
+  function putActiveThreadOnTop(threadId: string, threads: Thread[] | null) {
+    if (!threads) return null;
+    const threadIndex = threads.findIndex((thread) => thread.id === threadId);
+    if (threadIndex === -1) return threads;
+    const thread = threads[threadIndex];
+    threads.splice(threadIndex, 1);
+    threads.unshift(thread);
+    return threads;
+  }
 
   if (!participant) return null;
   if (!user) return null;
@@ -270,7 +309,47 @@ export default function Thread() {
         </div>
       </div>
       <div className="flex flex-1 overflow-y-hidden">
-        <div className="bg-blue-50 w-[300px] hidden lg:block">threads bar</div>
+        <div className="bg-blue-50 w-[400px] hidden lg:flex flex-col">
+          <div className="flex flex-col space-y-4 p-4 bg-gray-100 rounded-lg shadow-md flex-1 overflow-hidden">
+            <input
+              type="text"
+              placeholder="Search"
+              className="w-full p-2 border border-gray-200 rounded-lg"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+
+            <div className="space-y-4 flex flex-col flex-1 overflow-auto">
+              {putActiveThreadOnTop(threadId, threads)?.map((thread) => {
+                const { id, name, image } = getUserInfo(thread);
+                return (
+                  <div
+                    key={thread.id}
+                    className={`flex items-center space-x-4 p-4  rounded-lg shadow-md border border-gray-200 cursor-pointer ${
+                      thread.id === threadId ? "bg-gray-200" : "bg-white"
+                    }`}
+                    onClick={(e) => {
+                      setThreadId(thread.id);
+                    }}
+                  >
+                    <img
+                      src={image}
+                      alt={name}
+                      className="w-12 h-12 rounded-full"
+                    />
+                    <div>
+                      <h2 className="text-lg font-semibold">{name}</h2>
+                      <p className="text-gray-500">
+                        {thread.last_message_content}
+                      </p>
+                      <p>{formatMessageDate(thread.last_message_created_at)}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
         {/* the main chat area */}
         <div
           className={`bg-red-50 flex-1 lg:flex flex-col ${selectedWindow === "PROFILE_WINDOW" ? "hidden" : "flex"}`}
@@ -354,7 +433,7 @@ export default function Thread() {
           </div>
         </div>
         <div
-          className={`w-full lg:w-[300px] overflow-hidden lg:flex ${selectedWindow === "PROFILE_WINDOW" ? "flex" : "hidden"}`}
+          className={`w-full lg:w-[400px] overflow-hidden lg:flex ${selectedWindow === "PROFILE_WINDOW" ? "flex" : "hidden"}`}
         >
           <div className="flex flex-col p-4 w-full">
             <XIcon

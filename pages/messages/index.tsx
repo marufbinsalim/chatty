@@ -28,9 +28,7 @@ export default function Messages() {
 
   return (
     <PageScaffold route="/messages">
-      <div className="flex flex-col space-y-4 p-4 bg-gray-100 rounded-lg shadow-md flex-1">
-        <h1>Messages</h1>
-
+      <div className="flex flex-col space-y-4 p-4 flex-1 overflow-hidden lg:w-[60vw] m-auto">
         <input
           type="text"
           placeholder="Search"
@@ -39,28 +37,32 @@ export default function Messages() {
           onChange={(e) => setSearchTerm(e.target.value)}
         />
 
-        {threads.map((thread) => {
-          const { id, name, image } = getUserInfo(thread);
-          return (
-            <Link href={`/messages/${thread.id}`} key={thread.id}>
-              <div
-                key={thread.id}
-                className="flex items-center space-x-4 p-4 bg-white rounded-lg shadow-md border border-gray-200"
-              >
-                <img
-                  src={image}
-                  alt={name}
-                  className="w-12 h-12 rounded-full"
-                />
-                <div>
-                  <h2 className="text-lg font-semibold">{name}</h2>
-                  <p className="text-gray-500">{thread.last_message_content}</p>
-                  <p>{formatMessageDate(thread.last_message_created_at)}</p>
+        <div className="space-y-4 flex flex-col flex-1 overflow-auto">
+          {threads.map((thread) => {
+            const { id, name, image } = getUserInfo(thread);
+            return (
+              <Link href={`/messages/${thread.id}`} key={thread.id}>
+                <div
+                  key={thread.id}
+                  className="flex items-center space-x-4 p-4 bg-white rounded-lg shadow-md border border-gray-200 mr-4"
+                >
+                  <img
+                    src={image}
+                    alt={name}
+                    className="w-12 h-12 rounded-full"
+                  />
+                  <div>
+                    <h2 className="text-lg font-semibold">{name}</h2>
+                    <p className="text-gray-500">
+                      {thread.last_message_content}
+                    </p>
+                    <p>{formatMessageDate(thread.last_message_created_at)}</p>
+                  </div>
                 </div>
-              </div>
-            </Link>
-          );
-        })}
+              </Link>
+            );
+          })}
+        </div>
       </div>
     </PageScaffold>
   );
