@@ -4,6 +4,7 @@ import { formatMessageDate } from "@/utils/format/date";
 import { truncateString } from "@/utils/format/textPreview";
 import { supabase } from "@/utils/supabase/uiClient";
 import { useUser } from "@clerk/nextjs";
+import { MapIcon, SearchIcon } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -30,13 +31,31 @@ export default function Messages() {
   return (
     <PageScaffold route="/messages">
       <div className="flex flex-col space-y-4 lg:p-4 flex-1 overflow-hidden lg:w-[60vw] w-full m-auto mt-4">
-        <input
-          type="text"
-          placeholder="Search"
-          className="m-auto p-2 border border-gray-200 rounded-lg w-[90%]"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
+        {threads.length === 0 && (
+          <div className="flex flex-col items-center space-y-4 flex-1 justify-center border border-gray-200 rounded-lg p-4 max-w-[90vw] m-auto md:m-0 mt-16">
+            <h1 className="text-2xl font-semibold">No messages yet</h1>
+            <Link href="/">
+              <SearchIcon
+                strokeWidth={0.8}
+                size={64}
+                className="cursor-pointer"
+              />
+            </Link>
+            <p className="text-gray-500 text-center">
+              Discover and connect with people around you
+            </p>
+          </div>
+        )}
+
+        {threads.length > 0 && (
+          <input
+            type="text"
+            placeholder="Search"
+            className="m-auto p-2 border border-gray-200 rounded-lg w-[90%]"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        )}
 
         <div className="space-y-4 flex flex-col flex-1 overflow-auto">
           {threads.map((thread) => {

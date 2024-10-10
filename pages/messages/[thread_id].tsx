@@ -5,9 +5,11 @@ import {
   ArrowLeft,
   ArrowRight,
   CircleDashed,
+  Hand,
   Laugh,
   LaughIcon,
   LucideLaugh,
+  SearchIcon,
   Smile,
   XCircle,
   XIcon,
@@ -319,6 +321,24 @@ export default function Thread() {
             />
 
             <div className="space-y-4 flex flex-col flex-1 overflow-auto">
+              {threads.length === 0 && (
+                <div className="flex flex-col items-center space-y-4 flex-1 justify-center border border-gray-200 rounded-lg p-4 max-w-[90vw] m-auto md:m-0 mt-16">
+                  <h1 className="text-2xl font-semibold">
+                    No Messages Sent Yet!
+                  </h1>
+                  <Link href="/">
+                    <SearchIcon
+                      strokeWidth={0.8}
+                      size={64}
+                      className="cursor-pointer"
+                    />
+                  </Link>
+                  <p className="text-gray-500 text-center">
+                    Discover and connect with people around you
+                  </p>
+                </div>
+              )}
+
               {putActiveThreadOnTop(threadId, threads)?.map((thread) => {
                 const { id, name, image } = getUserInfo(thread);
                 return (
@@ -358,6 +378,22 @@ export default function Thread() {
               <CircleDashed className="m-auto mt-4 animate-spin" size={32} />
             )}
             <div id="loading" style={{ height: "20px" }} ref={loadingRef}></div>
+            {messages?.length === 0 && (
+              <div className="flex flex-col items-center space-y-4 flex-1 justify-center rounded-lg p-4 max-w-[90vw] m-auto md:m-0 mt-16">
+                <h1 className="text-2xl font-semibold">Say Hi!</h1>
+                <Link href="/">
+                  <Hand
+                    strokeWidth={0.8}
+                    size={64}
+                    className="cursor-pointer"
+                  />
+                </Link>
+                <p className="text-gray-500 text-center">
+                  {`Start a conversation with ${participant.firstName} ${participant.lastName}!`}
+                </p>
+              </div>
+            )}
+
             {messages?.map((message) => (
               <div
                 ref={lastFetchedBatchesLastId === message.id ? scrollRef : null}
