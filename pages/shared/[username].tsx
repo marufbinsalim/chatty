@@ -1,12 +1,18 @@
 import { supabase } from "@/utils/supabase/uiClient";
 import { useUser } from "@clerk/nextjs";
+import { CircleDashed, Home, XCircleIcon } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+
+type Error = "no_user_found";
 
 export default function SharedManager() {
   const router = useRouter();
   const { username: sharedUsername } = router.query as { username: string };
   const { user } = useUser();
+  const [error, setError] = useState<Error | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchUser(sharedUsername: string, loggedInUser: any) {
@@ -17,7 +23,12 @@ export default function SharedManager() {
         .single();
 
       console.log(data, error);
-      if (error || !data) return;
+      if (error || !data) {
+        console.error("Error fetching user:", error);
+        setError("no_user_found");
+        setLoading(false);
+        return;
+      }
       let sharedUserId = data.id as string;
       let loggedInUserId = loggedInUser.id as string;
 
@@ -96,6 +107,7 @@ export default function SharedManager() {
         .select()
         .single();
 
+      setLoading(false);
       router.push(`/messages/${threadId}`);
     }
 
@@ -105,9 +117,28 @@ export default function SharedManager() {
   }, [sharedUsername, user]);
 
   return (
-    <div>
-      <h1>Share Manager</h1>
-      <p>Shared Manager ID: {sharedUsername}</p>
+    <div className="flex flex-col items-center justify-center h-screen">
+      <div className="flex flex-col items-center justify-center gap-4 shadow-sm p-4 border border-gray-200 rounded-lg mt-2">
+        {error === "no_user_found" && (
+          <p className="text-gray-500 text-center">
+            No user found with the username <strong>{sharedUsername}</strong>
+          </p>
+        )}
+        {error === "no_user_found" && (
+          <div>
+            <Link href="/">
+              <Home strokeWidth={0.8} size={64} className="cursor-pointer" />
+            </Link>
+            <p className="text-gray-500 text-center">
+              Go back to the home page
+            </p>
+          </div>
+        )}
+
+        {loading && (
+          <CircleDashed strokeWidth={0.8} size={64} className="animate-spin" />
+        )}
+      </div>
     </div>
   );
 }
