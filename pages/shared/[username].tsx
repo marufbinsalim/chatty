@@ -121,7 +121,7 @@ export default function SharedManager() {
       <div className="flex flex-col items-center justify-center gap-4 shadow-sm p-4 border border-gray-200 rounded-lg mt-2">
         {error === "no_user_found" && (
           <p className="text-gray-500 text-center">
-            No user found with the username <strong>{sharedUsername}</strong>
+            No user found with the username <strong>@{sharedUsername}</strong>
           </p>
         )}
         {error === "no_user_found" && (
