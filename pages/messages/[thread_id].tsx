@@ -283,7 +283,7 @@ export default function Thread() {
   return (
     <div className="flex flex-col h-dvh">
       <div
-        className={`lg:flex items-center p-4 bg-gray-200 space-x-4 ${selectedWindow === "PROFILE_WINDOW" ? "hidden" : "flex"}`}
+        className={`lg:flex items-center p-4 bg-gray-50 space-x-4 ${selectedWindow === "PROFILE_WINDOW" ? "hidden" : "flex"}`}
       >
         <button>
           <ArrowLeft
@@ -311,7 +311,7 @@ export default function Thread() {
       </div>
       <div className="flex flex-1 overflow-y-hidden">
         <div className="w-[350px] hidden lg:flex flex-col">
-          <div className="flex flex-col space-y-4 p-4 rounded-lg shadow-md flex-1 overflow-hidden">
+          <div className="flex flex-col space-y-4 p-4 rounded-lg flex-1 overflow-hidden">
             <input
               type="text"
               placeholder="Search"
@@ -371,7 +371,7 @@ export default function Thread() {
         </div>
         {/* the main chat area */}
         <div
-          className={`bg-gray-100 flex-1 lg:flex flex-col ${selectedWindow === "PROFILE_WINDOW" ? "hidden" : "flex"}`}
+          className={`flex-1 lg:flex flex-col ${selectedWindow === "PROFILE_WINDOW" ? "hidden" : "flex"}`}
         >
           <div className="flex-1 overflow-y-auto">
             {loading && (
@@ -468,9 +468,9 @@ export default function Thread() {
           </div>
         </div>
         <div
-          className={`w-full lg:w-[300px] overflow-hidden lg:flex ${selectedWindow === "PROFILE_WINDOW" ? "flex" : "hidden"}`}
+          className={`w-full lg:w-[350px] overflow-hidden lg:flex ${selectedWindow === "PROFILE_WINDOW" ? "flex" : "hidden"}`}
         >
-          <div className="flex flex-col p-4 w-full">
+          <div className="flex flex-col p-4 w-full rounded-lg border border-gray-200 m-4">
             <XIcon
               size={32}
               className="cursor-pointer block ml-auto mb-4 lg:hidden"
