@@ -344,8 +344,8 @@ export default function Thread() {
                 return (
                   <div
                     key={thread.id}
-                    className={`flex items-center space-x-4 p-4  rounded-lg shadow-md border border-gray-200 cursor-pointer mr-4 ${
-                      thread.id === threadId ? "bg-gray-200" : "bg-white"
+                    className={`flex items-center space-x-4 p-4  rounded-lg border border-gray-300 cursor-pointer mr-4 ${
+                      thread.id === threadId ? "bg-gray-100" : "bg-white"
                     }`}
                     onClick={async (e) => {
                       window.location.href = `/messages/${thread.id}`;
@@ -398,7 +398,7 @@ export default function Thread() {
               <div
                 ref={lastFetchedBatchesLastId === message.id ? scrollRef : null}
                 key={message.id}
-                className={`p-4 m-4 bg-gray-300 w-2/3 rounded-lg ${
+                className={`p-4 m-4 bg-gray-100 border border-gray-300 w-2/3 rounded-lg ${
                   getMessageSender(message)?.isSelfMessage
                     ? "ml-auto"
                     : "mr-auto"
