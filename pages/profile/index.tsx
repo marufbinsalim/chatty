@@ -67,7 +67,7 @@ function ProfileInfoCard({
           <span>
             {process.env.NODE_ENV === "development"
               ? `http://localhost:3000/shared/${username}`
-              : `https://www.chattypals.vercel.app/shared/${username}`}
+              : `https://chattypals.vercel.app/shared/${username}`}
           </span>
           )
         </p>
@@ -77,7 +77,7 @@ function ProfileInfoCard({
             navigator.clipboard.writeText(
               process.env.NODE_ENV === "development"
                 ? `http://localhost:3000/shared/${username}`
-                : `https://www.chattypals.vercel.app/shared/${username}`,
+                : `https://chattypals.vercel.app/shared/${username}`,
             );
             toast.success("Link copied to clipboard", {
               position: "bottom-center",
