@@ -66,8 +66,8 @@ function ProfileInfoCard({
         <p className="text-center text-gray-600 text-wrap break-all">
           <span>
             {process.env.NODE_ENV === "development"
-              ? `http://localhost:3000/shared/${username}`
-              : `https://chattypals.vercel.app/shared/${username}`}
+              ? `http://localhost:3000/share/${username}`
+              : `https://chattypals.vercel.app/share/${username}`}
           </span>
           )
         </p>
@@ -76,8 +76,8 @@ function ProfileInfoCard({
           onClick={() => {
             navigator.clipboard.writeText(
               process.env.NODE_ENV === "development"
-                ? `http://localhost:3000/shared/${username}`
-                : `https://chattypals.vercel.app/shared/${username}`,
+                ? `http://localhost:3000/share/${username}`
+                : `https://chattypals.vercel.app/share/${username}`,
             );
             toast.success("Link copied to clipboard", {
               position: "bottom-center",

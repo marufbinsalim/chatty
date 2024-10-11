@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 export default function HomeScreen() {
   const router = useRouter();
   const currentUrl = window.location.href;
-  const isItShared = currentUrl.includes("shared");
+  const isItShared = currentUrl.includes("share");
   const lastAfterSlash = currentUrl.substring(
     currentUrl.lastIndexOf("/") + 1,
     currentUrl.length,
@@ -31,7 +31,7 @@ export default function HomeScreen() {
       <SignInButton
         forceRedirectUrl={
           isItShared
-            ? `/api/new-user?redirect=/shared/${lastAfterSlash}`
+            ? `/api/new-user?redirect=/share/${lastAfterSlash}`
             : "/api/new-user"
         }
       >

@@ -70,7 +70,7 @@ export default async function handler(
   let redirectTo = "/";
   // there is a query parameter called redirect
   console.log(req.query.redirect);
-  if (req.query.redirect && req.query.redirect.includes("shared")) {
+  if (req.query.redirect && req.query.redirect.includes("share")) {
     redirectTo = req.query.redirect as string;
   }
 
