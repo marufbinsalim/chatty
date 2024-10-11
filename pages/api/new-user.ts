@@ -27,6 +27,13 @@ export default async function handler(
     return result;
   }
 
+  // see if user is already in the database
+  let supabase = createClient(req, res);
+  const { data, error: userFetchError } = await supabase
+    .from("users")
+    .select()
+    .eq("id", user.id);
+
   async function getUsername(email: string, id: string) {
     let username = email.split("@")[0] + getRandomLettersAndNumbers(6);
     await clerkClient().users.updateUser(id, {
@@ -37,26 +44,29 @@ export default async function handler(
     return username;
   }
 
-  let username = await getUsername(
-    user.emailAddresses[0].emailAddress,
-    user.id,
-  );
+  if (!data || data.length === 0) {
+    console.log("User not found in database");
 
-  console.log(username, userId);
+    let username = await getUsername(
+      user.emailAddresses[0].emailAddress,
+      user.id,
+    );
 
-  let supabase = createClient(req, res);
-  const { error } = await supabase.from("users").upsert([
-    {
-      id: user.id,
-      email: user.emailAddresses[0].emailAddress,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      imageUrl: user.imageUrl,
-      username: username,
-    },
-  ]);
+    console.log(username, userId);
 
-  console.error(error);
+    const { error } = await supabase.from("users").upsert([
+      {
+        id: user.id,
+        email: user.emailAddresses[0].emailAddress,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        imageUrl: user.imageUrl,
+        username: username,
+      },
+    ]);
+
+    console.error(error);
+  }
   let redirectTo = "/";
   // there is a query parameter called redirect
   console.log(req.query.redirect);
