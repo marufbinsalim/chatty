@@ -11,11 +11,11 @@ export default function PageScaffold({
   children: ReactNode;
 }) {
   return (
-    <div className="h-dvh max-h-dvh flex flex-col">
+    <div className="h-dvh bg-background-color max-h-dvh flex flex-col">
       {/* header */}
       <Header />
-      <div className="flex-1 flex flex-col overflow-hidden">{children}</div>
       <Navbar route={route} />
+      <div className="flex-1 flex flex-col overflow-hidden">{children}</div>
     </div>
   );
 }

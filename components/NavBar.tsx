@@ -1,4 +1,4 @@
-import { EarthIcon, MessageCircleIcon, Newspaper } from "lucide-react";
+import { EarthIcon, MessageCircleIcon } from "lucide-react";
 import Link from "next/link";
 
 export type NavbarProps = {
@@ -7,23 +7,42 @@ export type NavbarProps = {
 
 export default function Navbar({ route }: NavbarProps) {
   return (
-    <div className="flex w-full bg-gray-50 p-2 justify-around md:justify-center md:gap-8">
+    <div className="flex w-max p-2 gap-8 mx-auto md:w-full justify-around md:justify-center  ">
+      {/* Discover Button */}
       <Link href="/">
-        <button
-          className={`p-2 flex gap-2 items-center ${route === "/home" ? "" : ""}`}
-        >
-          <p className="hidden md:block font-thin">Discover</p>
-          <EarthIcon strokeWidth={1} size={24} />
-        </button>
+        <div className="flex flex-col items-center">
+          <button className="p-2 flex gap-2 items-center">
+            <EarthIcon
+              strokeWidth={1}
+              size={24}
+              className={route === "/home" ? "text-blue-500" : "text-gray-500"}
+            />
+            <p className={`hidden md:block font-semibold ${route === "/home" ? "text-blue-500" : "text-gray-500"}`}>
+              Discover
+            </p>
+          </button>
+          {route === "/home" && (
+            <div className="w-full h-1  bg-blue-500 rounded-t-md " />
+          )}
+        </div>
       </Link>
 
       <Link href="/messages">
-        <button
-          className={`p-2 flex gap-2 items-center ${route === "/messages" ? "" : ""}`}
-        >
-          <p className="hidden md:block font-thin">Messages</p>
-          <MessageCircleIcon strokeWidth={1} size={24} />
-        </button>
+        <div className="flex flex-col items-center">
+          <button className="p-2 flex gap-2 items-center">
+            <MessageCircleIcon
+              strokeWidth={1}
+              size={24}
+              className={route === "/messages" ? "text-blue-500" : "text-gray-500"}
+            />
+            <p className={`hidden md:block font-semibold ${route === "/messages" ? "text-blue-500" : "text-gray-500"}`}>
+              Messages
+            </p>
+          </button>
+          {route === "/messages" && (
+            <div className="w-full h-1  bg-blue-500 rounded-t-md" />
+          )}
+        </div>
       </Link>
     </div>
   );

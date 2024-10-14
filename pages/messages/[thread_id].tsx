@@ -9,7 +9,11 @@ import {
   Laugh,
   LaughIcon,
   LucideLaugh,
+  Search,
   SearchIcon,
+  Send,
+  SendHorizonalIcon,
+  SendIcon,
   Smile,
   XCircle,
   XIcon,
@@ -208,19 +212,19 @@ export default function Thread() {
 
     return message.user_id === user.id
       ? {
-          user_id: user.id,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          imageUrl: user.imageUrl,
-          isSelfMessage: true,
-        }
+        user_id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        imageUrl: user.imageUrl,
+        isSelfMessage: true,
+      }
       : {
-          user_id: participant?.user_id,
-          firstName: participant?.firstName,
-          lastName: participant?.lastName,
-          imageUrl: participant?.imageUrl,
-          isSelfMessage: false,
-        };
+        user_id: participant?.user_id,
+        firstName: participant?.firstName,
+        lastName: participant?.lastName,
+        imageUrl: participant?.imageUrl,
+        isSelfMessage: false,
+      };
   }
 
   const { threads, searchTerm, setSearchTerm } = useRealtimeThreads(user?.id);
@@ -281,44 +285,23 @@ export default function Thread() {
   }
 
   return (
-    <div className="flex flex-col h-dvh">
-      <div
-        className={`lg:flex items-center p-4 bg-gray-50 space-x-4 ${selectedWindow === "PROFILE_WINDOW" ? "hidden" : "flex"}`}
-      >
-        <button>
-          <ArrowLeft
-            size={24}
-            onClick={(e) => {
-              router.push("/messages");
-            }}
-          />
-        </button>
-        <div
-          className="flex items-center space-x-2 cursor-pointer"
-          onClick={(e) => {
-            setSelectedWindow("PROFILE_WINDOW");
-          }}
-        >
-          <img
-            src={participant.imageUrl || ""}
-            alt="profile"
-            className="w-8 h-8 rounded-full"
-          />
-          <h1>
-            {participant.firstName} {participant.lastName}
-          </h1>
-        </div>
-      </div>
+    <div className="flex flex-col h-dvh ">
+
       <div className="flex flex-1 overflow-y-hidden">
         <div className="w-[350px] hidden lg:flex flex-col">
           <div className="flex flex-col space-y-4 p-4 rounded-lg flex-1 overflow-hidden">
-            <input
-              type="text"
-              placeholder="Search"
-              className="w-full p-2 border border-gray-200 rounded-lg"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+            <div className="relative w-full">
+              <input
+                type="text"
+                placeholder="Search"
+                className=" p-2 pl-10 border border-gray-200 rounded-full"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              <div className="absolute inset-y-0 left-2 flex items-center">
+                <Search className="h-5 w-5 text-gray-400" />
+              </div>
+            </div>        
 
             <div className="space-y-4 flex flex-col flex-1 overflow-auto">
               {threads.length === 0 && (
@@ -344,9 +327,8 @@ export default function Thread() {
                 return (
                   <div
                     key={thread.id}
-                    className={`flex items-center space-x-4 p-4  rounded-lg border border-gray-300 cursor-pointer mr-4 ${
-                      thread.id === threadId ? "bg-gray-100" : "bg-white"
-                    }`}
+                    className={`flex items-center space-x-4 p-4  rounded-2xl border border-gray-300 cursor-pointer mr-4 ${thread.id === threadId ? "bg-gray-100" : "bg-white"
+                      }`}
                     onClick={async (e) => {
                       window.location.href = `/messages/${thread.id}`;
                     }}
@@ -371,8 +353,35 @@ export default function Thread() {
         </div>
         {/* the main chat area */}
         <div
-          className={`flex-1 lg:flex flex-col ${selectedWindow === "PROFILE_WINDOW" ? "hidden" : "flex"}`}
+          className={`border flex-1 lg:flex flex-col ${selectedWindow === "PROFILE_WINDOW" ? "hidden" : "flex"}`}
         >
+          <div
+            className={` border-none bg-gray-100 shadow-sm lg:flex items-center p-4 space-x-4 ${selectedWindow === "PROFILE_WINDOW" ? "hidden" : "flex"}`}
+          >
+            <button>
+              <ArrowLeft
+                size={24}
+                onClick={(e) => {
+                  router.push("/messages");
+                }}
+              />
+            </button>
+            <div
+              className="flex items-center space-x-2 cursor-pointer"
+              onClick={(e) => {
+                setSelectedWindow("PROFILE_WINDOW");
+              }}
+            >
+              <img
+                src={participant.imageUrl || ""}
+                alt="profile"
+                className="w-8 h-8 rounded-full"
+              />
+              <h1>
+                {participant.firstName} {participant.lastName}
+              </h1>
+            </div>
+          </div>
           <div className="flex-1 overflow-y-auto">
             {loading && (
               <CircleDashed className="m-auto mt-4 animate-spin" size={32} />
@@ -398,39 +407,41 @@ export default function Thread() {
               <div
                 ref={lastFetchedBatchesLastId === message.id ? scrollRef : null}
                 key={message.id}
-                className={`p-4 m-4 bg-gray-100 border border-gray-300 w-2/3 rounded-lg ${
-                  getMessageSender(message)?.isSelfMessage
-                    ? "ml-auto"
-                    : "mr-auto"
-                }`}
+                className={`p-4 m-4 border border-gray-300 w-2/4 max-w-max shadow-sm rounded-3xl ${getMessageSender(message)?.isSelfMessage
+                  ? "ml-auto bg-blue-200" // Sent messages (self) have a light blue background
+                  : "mr-auto bg-gray-200"  // Received messages have a light gray background
+                  }`}
               >
                 <div className="flex flex-col space-y-4">
-                  <div className="flex items-center space-x-2">
-                    <img
-                      className="w-8 h-8 bg-gray-300 rounded-full"
-                      src={getMessageSender(message)?.imageUrl || ""}
-                      alt=""
-                    />
-                    <p>{`${getMessageSender(message)?.firstName} ${getMessageSender(message)?.lastName || ""}`}</p>
-                  </div>
+                  {/* 
+                      <div className="flex items-center space-x-2">
+                        <img
+                          className="w-8 h-8 bg-gray-300 rounded-full"
+                          src={getMessageSender(message)?.imageUrl || ""}
+                          alt=""
+                        />
+                        <p>{`${getMessageSender(message)?.firstName} ${getMessageSender(message)?.lastName || ""}`}</p>
+                      </div> 
+                  */}
 
                   <div>
-                    <p>{message.content}</p>
-                    <p className="text-xs font-light">
+                    <p className="text-md">{message.content}</p>
+                    <p className="text-xs mt-4 font-light flex justify-end">
                       {formatMessageDate(message.sent_at)}
                     </p>
                   </div>
                 </div>
               </div>
             ))}
+
           </div>
-          <div className="flex items-center space-x-4 p-4 relative">
+          <div className="flex mb-4 items-center space-x-4 p-4 relative">
             <input
               value={inputText}
               onFocus={() => setShowPicker(false)}
               onChange={(e) => setInputText(e.target.value)}
               type="text"
-              className="w-full border border-gray-300 rounded p-2 "
+              className="w-full border border-gray-300 rounded-full p-2 "
               onKeyDown={(e) => e.key === "Enter" && sendMessage()}
               ref={inputRef}
             />
@@ -462,7 +473,7 @@ export default function Thread() {
               {sendingText ? (
                 <CircleDashed size={24} className="animate-spin" />
               ) : (
-                <ArrowRight size={24} />
+                <SendHorizonalIcon size={24} />
               )}
             </button>
           </div>
@@ -470,7 +481,7 @@ export default function Thread() {
         <div
           className={`w-full lg:w-[350px] overflow-hidden lg:flex ${selectedWindow === "PROFILE_WINDOW" ? "flex" : "hidden"}`}
         >
-          <div className="flex flex-col p-4 w-full rounded-lg border border-gray-200 m-4">
+          <div className="flex flex-col p-4 w-full rounded-lg border border-gray-200 ml-4">
             <XIcon
               size={32}
               className="cursor-pointer block ml-auto mb-4 lg:hidden"

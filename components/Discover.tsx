@@ -16,6 +16,7 @@ import {
   MessageSquareText,
   TextIcon,
   XCircleIcon,
+  Search,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -101,37 +102,21 @@ export default function Discover() {
   }
 
   return (
-    <div className="flex-1 px-4 w-full md:w-[80vw] mx-auto flex flex-col overflow-auto">
-      <h1 className="text-2xl font-bold mb-4">Discover</h1>
-      <div className="mb-4">
+    <div className="flex-1 px-4 mt-4 w-full md:w-[70vw] mx-auto flex flex-col overflow-auto">
+      <div className="mb-4 relative px-4">
+        <div className="absolute inset-y-0  mt-4 pl-3 flex items-center ">
+          <Search className="h-5 w-5 text-gray-500" />
+        </div>
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search users"
-          className="border border-gray-300 rounded-lg py-2 px-4 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="border border-gray-300 rounded-full py-2 mt-4 pl-10 pr-4 w-full focus:outline-none focus:ring-1 focus:ring-green-200"
         />
       </div>
 
-      {totalPage !== 0 && (
-        <div className="flex items-center gap-4 ml-auto w-max">
-          <button
-            disabled={currentPage === 1}
-            onClick={previousPage}
-            className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-          <p className="text-sm font-light">{`${currentPage}/${totalPage}`}</p>
-          <button
-            onClick={nextPage}
-            disabled={currentPage === totalPage}
-            className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <ChevronRight className="w-5 h-5" />
-          </button>
-        </div>
-      )}
+
       {loading && (
         <div className="text-center text-gray-500 w-max m-auto animate-spin">
           {" "}
@@ -143,7 +128,7 @@ export default function Discover() {
           users.map((user, index) => (
             <div
               key={index}
-              className="flex md:flex-row flex-col md:items-center gap-4 mb-4 p-4 border border-gray-200 rounded-lg shadow-sm"
+              className="flex md:flex-row flex-col md:items-center text-gray-800 gap-4 mb-4 p-4 border border-gray-200 rounded-3xl shadow-md bg-secondary-color hover:bg-[#E8E6E7]  transition-all duration-300"
             >
               <div className="flex items-center gap-4">
                 <img
@@ -186,6 +171,26 @@ export default function Discover() {
             />
           </div>
         ) : null}
+
+        {totalPage !== 0 && (
+          <div className="flex items-center gap-4 ml-auto w-max mb-4">
+            <button
+              disabled={currentPage === 1}
+              onClick={previousPage}
+              className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <p className="text-sm font-light">{`${currentPage}/${totalPage}`}</p>
+            <button
+              onClick={nextPage}
+              disabled={currentPage === totalPage}
+              className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

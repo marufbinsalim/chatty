@@ -4,7 +4,7 @@ import { formatMessageDate } from "@/utils/format/date";
 import { truncateString } from "@/utils/format/textPreview";
 import { supabase } from "@/utils/supabase/uiClient";
 import { useUser } from "@clerk/nextjs";
-import { MapIcon, SearchIcon } from "lucide-react";
+import { MapIcon, Search, SearchIcon } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -47,15 +47,20 @@ export default function Messages() {
           </div>
         )}
 
-        {threads.length > 0 && (
-          <input
-            type="text"
-            placeholder="Search"
-            className="m-auto p-2 border border-gray-200 rounded-lg w-[90%]"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        )}
+        <div className="relative w-[90%] mx-auto">
+          {threads.length > 0 && (
+            <input
+              type="text"
+              placeholder="Search"
+              className="p-2 border border-gray-200 rounded-full pl-10 w-full focus:outline-none focus:ring-1 focus:ring-green-200"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          )}
+          <div className="absolute left-4 top-1/2 transform -translate-y-1/2 flex items-center">
+            <Search className="h-5 w-5 text-gray-400" />
+          </div>
+        </div>
 
         <div className="space-y-4 flex flex-col flex-1 overflow-auto">
           {threads.map((thread) => {
@@ -64,20 +69,25 @@ export default function Messages() {
               <Link href={`/messages/${thread.id}`} key={thread.id}>
                 <div
                   key={thread.id}
-                  className="flex items-center space-x-4 p-4 bg-white rounded-lg shadow-md border border-gray-200 w-[90%] m-auto"
+                  className="flex items-center space-x-4 p-4 border border-gray-200 w-[90%] m-auto bg-secondary-color rounded-3xl shadow-md "
                 >
                   <img
                     src={image}
                     alt={name}
                     className="w-12 h-12 rounded-full"
                   />
-                  <div>
-                    <h2 className="text-lg font-semibold">{name}</h2>
+                  <div className="flex-grow flex flex-col justify-between">
+                    <div className="flex justify-between items-center">
+                      <h2 className="text-lg font-semibold">{name}</h2>
+                      <p className="text-gray-500">
+                        {formatMessageDate(thread.last_message_created_at)}
+                      </p>
+                    </div>
                     <p className="text-gray-500">
                       {truncateString(thread.last_message_content, 50)}
                     </p>
-                    <p>{formatMessageDate(thread.last_message_created_at)}</p>
                   </div>
+
                 </div>
               </Link>
             );
