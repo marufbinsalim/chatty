@@ -301,7 +301,7 @@ export default function Thread() {
               <div className="absolute inset-y-0 left-2 flex items-center">
                 <Search className="h-5 w-5 text-gray-400" />
               </div>
-            </div>        
+            </div>
 
             <div className="space-y-4 flex flex-col flex-1 overflow-auto">
               {threads.length === 0 && (
@@ -382,6 +382,7 @@ export default function Thread() {
               </h1>
             </div>
           </div>
+
           <div className="flex-1 overflow-y-auto">
             {loading && (
               <CircleDashed className="m-auto mt-4 animate-spin" size={32} />
@@ -403,36 +404,27 @@ export default function Thread() {
               </div>
             )}
 
-            {messages?.map((message) => (
-              <div
-                ref={lastFetchedBatchesLastId === message.id ? scrollRef : null}
-                key={message.id}
-                className={`p-4 m-4 border border-gray-300 w-2/4 max-w-max shadow-sm rounded-3xl ${getMessageSender(message)?.isSelfMessage
-                  ? "ml-auto bg-blue-200" // Sent messages (self) have a light blue background
-                  : "mr-auto bg-gray-200"  // Received messages have a light gray background
-                  }`}
-              >
-                <div className="flex flex-col space-y-4">
-                  {/* 
-                      <div className="flex items-center space-x-2">
-                        <img
-                          className="w-8 h-8 bg-gray-300 rounded-full"
-                          src={getMessageSender(message)?.imageUrl || ""}
-                          alt=""
-                        />
-                        <p>{`${getMessageSender(message)?.firstName} ${getMessageSender(message)?.lastName || ""}`}</p>
-                      </div> 
-                  */}
-
-                  <div>
-                    <p className="text-md">{message.content}</p>
-                    <p className="text-xs mt-4 font-light flex justify-end">
+            <div className="flex flex-col space-y-2 p-4">
+              {messages?.map((message) => (
+                <div
+                  ref={lastFetchedBatchesLastId === message.id ? scrollRef : null}
+                  key={message.id}
+                  className={`flex ${getMessageSender(message)?.isSelfMessage ? "justify-end" : "justify-start"}`} 
+                >
+                  <div
+                    className={`p-3 m-2 border border-gray-300 shadow-sm rounded-3xl inline-block max-w-md ${getMessageSender(message)?.isSelfMessage
+                      ? "bg-blue-200 text-right" 
+                      : "bg-gray-200 text-left"  
+                      }`}
+                  >
+                    <p className="text-md break-words">{message.content}</p>
+                    <p className="text-xs mt-2 font-light">
                       {formatMessageDate(message.sent_at)}
                     </p>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
 
           </div>
           <div className="flex mb-4 items-center space-x-4 p-4 relative">
