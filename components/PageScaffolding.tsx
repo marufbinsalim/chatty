@@ -11,7 +11,7 @@ export default function PageScaffold({
   children: ReactNode;
 }) {
   return (
-    <div className="h-dvh bg-background-color max-h-dvh flex flex-col">
+    <div className="h-dvh max-h-dvh flex bg-[#333566] flex-col">
       {/* header */}
       <Header />
       <Navbar route={route} />
