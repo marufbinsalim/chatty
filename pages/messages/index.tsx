@@ -4,9 +4,8 @@ import { formatMessageDate } from "@/utils/format/date";
 import { truncateString } from "@/utils/format/textPreview";
 import { supabase } from "@/utils/supabase/uiClient";
 import { useUser } from "@clerk/nextjs";
-import { MapIcon, SearchIcon } from "lucide-react";
+import { Search } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 
 export default function Messages() {
   const { user } = useUser();
@@ -30,53 +29,55 @@ export default function Messages() {
 
   return (
     <PageScaffold route="/messages">
-      <div className="flex flex-col space-y-4 lg:p-4 flex-1 overflow-hidden lg:w-[60vw] w-full m-auto mt-4">
-        {threads.length === 0 && (
-          <div className="flex flex-col items-center space-y-4 flex-1 justify-center border border-gray-200 rounded-lg p-4 max-w-[90vw] m-auto md:m-0 mt-16">
-            <h1 className="text-2xl font-semibold">No messages yet</h1>
-            <Link href="/">
-              <SearchIcon
-                strokeWidth={0.8}
-                size={64}
-                className="cursor-pointer"
-              />
-            </Link>
-            <p className="text-gray-500 text-center">
-              Discover and connect with people around you
-            </p>
-          </div>
-        )}
-
+      <div className="relative mt-4 w-[60vw] px-4 mx-auto">
         {threads.length > 0 && (
           <input
             type="text"
             placeholder="Search"
-            className="m-auto p-2 border border-gray-200 rounded-lg w-[90%]"
+            className="bg-[#4b497a] rounded-full py-2 text-white pl-10 w-full shadow-sm focus:outline-none focus:ring-1 focus:ring-[#b0a6c1]"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         )}
+        <div className="absolute inset-y-0 ml-1 flex items-center">
+          <Search className="ml-2 h-5 w-5 text-gray-300" strokeWidth={2} />
+        </div>
+      </div>
+      <div className="flex flex-col  overflow-hidden lg:w-[60vw] w-full m-auto  mt-4 bg-[#4b497a] rounded-xl ">
+        {threads.length === 0 && (
+          <div className="flex  flex-col items-center space-y-4 flex-1 justify-center border  rounded-lg p-6 max-w-[90vw] m-auto md:m-0 mt-16  shadow-md">
+            <h1 className="text-2xl font-semibold text-white">No messages yet</h1>
+            <Link href="/">
+              <Search size={64} className="text-gray-400 cursor-pointer" />
+            </Link>
+            <p className="text-gray-500 text-center">Discover and connect with people around you</p>
+          </div>
+        )}
 
-        <div className="space-y-4 flex flex-col flex-1 overflow-auto">
+        <div className="flex  flex-col overflow-auto ">
           {threads.map((thread) => {
             const { id, name, image } = getUserInfo(thread);
             return (
               <Link href={`/messages/${thread.id}`} key={thread.id}>
                 <div
                   key={thread.id}
-                  className="flex items-center space-x-4 p-4 bg-white rounded-lg shadow-md border border-gray-200 w-[90%] m-auto"
+                  className="flex items-center justify-center  p-4 gap-4 w-full border-b border-gray-500  hover:bg-[#5a537f] transition-all duration-300 shadow-md "
                 >
                   <img
                     src={image}
                     alt={name}
-                    className="w-12 h-12 rounded-full"
+                    className="w-12 h-12 rounded-full shadow-sm"
                   />
-                  <div>
-                    <h2 className="text-lg font-semibold">{name}</h2>
-                    <p className="text-gray-500">
+                  <div className="flex-grow flex flex-col justify-between">
+                    <div className="flex justify-between items-center">
+                      <h2 className="text-lg font-semibold text-white">{name}</h2>
+                      <p className="text-gray-400">
+                        {formatMessageDate(thread.last_message_created_at)}
+                      </p>
+                    </div>
+                    <p className="text-gray-400">
                       {truncateString(thread.last_message_content, 50)}
                     </p>
-                    <p>{formatMessageDate(thread.last_message_created_at)}</p>
                   </div>
                 </div>
               </Link>

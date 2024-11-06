@@ -2,7 +2,7 @@ import { supabase } from "@/utils/supabase/uiClient";
 import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 6;
 export default function useDiscover({ query }: { query: string }) {
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
